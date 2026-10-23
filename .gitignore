@@ -10,3 +10,10 @@ dist/
 __pycache__/
 *.pyc
 .teyla/
+.build/
+DerivedData/
+*.xcodeproj
+*.xcuserstate
+xcuserdata/
+.swiftpm/
+.claude/launch.json
