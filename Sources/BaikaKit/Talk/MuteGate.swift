@@ -22,10 +22,12 @@ public struct MuteGate: Sendable, Equatable {
         owed = on ? Self.tailFrames : 0
     }
 
-    /// What to send for one microphone frame: the frame itself when live, silence of the same
-    /// length for the tail after a mute, and nil once the tail is paid.
-    public mutating func outgoing(_ frame: Data) -> Data? {
-        guard isMuted else { return frame }
+    /// What to send for one microphone frame. `capturedMuted` is the mute state when the frame
+    /// was recorded, not when it is dequeued: a send that stalls must not let a frame recorded
+    /// while muted go out after the person unmutes. A frame recorded live is sent as it is;
+    /// one recorded muted becomes silence of the same length for the tail, then nothing.
+    public mutating func outgoing(_ frame: Data, capturedMuted: Bool) -> Data? {
+        guard capturedMuted else { return frame }
         guard owed > 0 else { return nil }
         owed -= 1
         return Data(count: frame.count)

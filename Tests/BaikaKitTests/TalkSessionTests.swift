@@ -174,7 +174,7 @@ struct MuteGateTests {
 
     @Test func liveFramesPassThroughUntouched() {
         var gate = MuteGate()
-        #expect(gate.outgoing(frame) == frame)
+        #expect(gate.outgoing(frame, capturedMuted: false) == frame)
     }
 
     @Test func muteSendsOneSecondOfSilenceThenNothing() {
@@ -183,7 +183,7 @@ struct MuteGateTests {
         var silent = 0
         var dropped = 0
         for _ in 0..<(MuteGate.tailFrames + 5) {
-            if let sent = gate.outgoing(frame) {
+            if let sent = gate.outgoing(frame, capturedMuted: true) {
                 #expect(sent == Data(count: frame.count))
                 silent += 1
             } else {
@@ -197,17 +197,25 @@ struct MuteGateTests {
     @Test func unmutingResumesAtOnce() {
         var gate = MuteGate()
         gate.setMuted(true)
-        _ = gate.outgoing(frame)
+        _ = gate.outgoing(frame, capturedMuted: true)
         gate.setMuted(false)
         #expect(!gate.isMuted)
-        #expect(gate.outgoing(frame) == frame)
+        #expect(gate.outgoing(frame, capturedMuted: false) == frame)
+    }
+
+    @Test func aFrameRecordedWhileMutedNeverGoesOutAfterUnmuting() {
+        var gate = MuteGate()
+        gate.setMuted(true)
+        gate.setMuted(false)
+        // It sat in a stalled queue and is dequeued after the unmute.
+        #expect(gate.outgoing(frame, capturedMuted: true) == nil)
     }
 
     @Test func mutingTwiceDoesNotOweTheTailTwice() {
         var gate = MuteGate()
         gate.setMuted(true)
-        for _ in 0..<MuteGate.tailFrames { _ = gate.outgoing(frame) }
+        for _ in 0..<MuteGate.tailFrames { _ = gate.outgoing(frame, capturedMuted: true) }
         gate.setMuted(true)
-        #expect(gate.outgoing(frame) == nil)
+        #expect(gate.outgoing(frame, capturedMuted: true) == nil)
     }
 }

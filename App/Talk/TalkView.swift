@@ -225,9 +225,7 @@ struct TalkView: View {
     private var footer: some View {
         VStack(spacing: 20) {
             if session.isEnded {
-                Button {
-                    Task { await session.continueConversation() }
-                } label: {
+                Button(action: resume) {
                     Text("Continue")
                 }
                 .buttonStyle(.primary)
@@ -259,6 +257,17 @@ struct TalkView: View {
                 .accessibilityLabel("Perform this")
             }
         }
+    }
+
+    /// Continue is a new session, so it needs the consent like a first one: it may have been
+    /// withdrawn in Settings since.
+    private func resume() {
+        guard app.talkConsented else {
+            session.dismissEnded()
+            showConsent = true
+            return
+        }
+        Task { await session.continueConversation() }
     }
 
     private var performTopic: String? { TalkTopic.derive(from: session.transcript.lines) }

@@ -1,10 +1,23 @@
 import AVFoundation
 import BaikaKit
+import os
 
 /// One frame of the microphone, ready for the wire, with its loudness for the orb.
 struct TalkFrame: Sendable {
     var pcm: Data
     var level: Double
+    /// The microphone was muted when this frame was recorded.
+    var muted: Bool
+}
+
+/// The mute switch as the audio thread reads it, so each frame is stamped when it is recorded and
+/// not when the main actor gets round to it.
+final class MuteFlag: Sendable {
+    private let state = OSAllocatedUnfairLock(initialState: false)
+    var isMuted: Bool {
+        get { state.withLock { $0 } }
+        set { state.withLock { $0 = newValue } }
+    }
 }
 
 /// The microphone into 24 kHz PCM16 frames, and PCM16 frames into the speaker.
@@ -34,6 +47,7 @@ final class TalkAudio {
     /// What the player takes: the same, as floats, which the mixer resamples.
     private let playFormat: AVAudioFormat
     private let frames: AsyncStream<TalkFrame>.Continuation
+    let muteFlag = MuteFlag()
     private var tap: Tap?
     private var observers: [NSObjectProtocol] = []
     private var stopped = false
@@ -93,7 +107,7 @@ final class TalkAudio {
               let tap = Tap(
                 from: inFormat, to: wireFormat,
                 frameBytes: PCM16.bytes(milliseconds: TalkLimits.frameMilliseconds, sampleRate: sampleRate),
-                frames: frames)
+                frames: frames, muteFlag: muteFlag)
         else {
             throw Failure.noInput
         }
@@ -200,15 +214,20 @@ final class TalkAudio {
         private let wire: AVAudioFormat
         private let frameBytes: Int
         private let frames: AsyncStream<TalkFrame>.Continuation
+        private let muteFlag: MuteFlag
         private var pending = Data()
 
         /// Nil when no converter exists between the two formats: the no-microphone case again.
-        init?(from input: AVAudioFormat, to wire: AVAudioFormat, frameBytes: Int, frames: AsyncStream<TalkFrame>.Continuation) {
+        init?(
+            from input: AVAudioFormat, to wire: AVAudioFormat, frameBytes: Int,
+            frames: AsyncStream<TalkFrame>.Continuation, muteFlag: MuteFlag
+        ) {
             guard let converter = AVAudioConverter(from: input, to: wire) else { return nil }
             self.converter = converter
             self.wire = wire
             self.frameBytes = frameBytes
             self.frames = frames
+            self.muteFlag = muteFlag
         }
 
         func push(_ buffer: AVAudioPCMBuffer) {
@@ -234,7 +253,7 @@ final class TalkAudio {
             while pending.count >= frameBytes {
                 let frame = Data(pending.prefix(frameBytes))
                 pending.removeFirst(frameBytes)
-                frames.yield(TalkFrame(pcm: frame, level: PCM16.level(PCM16.samples(frame))))
+                frames.yield(TalkFrame(pcm: frame, level: PCM16.level(PCM16.samples(frame)), muted: muteFlag.isMuted))
             }
         }
     }

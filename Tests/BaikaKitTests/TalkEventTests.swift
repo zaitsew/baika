@@ -175,6 +175,26 @@ struct TalkTranscriptTests {
         #expect(transcript.lines.last?.text == "line \(TalkTranscript.maxLines + 19)")
     }
 
+    @Test func aTalkedOverAnswerKeepsOnlyWhatWasPlayed() {
+        var transcript = fold([.answerItem("a1"), .sayingDelta("one two three four five six seven eight")])
+        transcript.keepHeard(fraction: 0.5)
+        #expect(transcript.lines.map(\.text) == ["one two three four"])
+        #expect(!transcript.lines[0].partial)
+        // Words that arrive late for the cut answer are dropped; the next answer is kept.
+        transcript.apply(.sayingDelta(" nine ten"))
+        transcript.apply(.said("one two three four five six seven eight nine ten"))
+        #expect(transcript.lines.map(\.text) == ["one two three four"])
+        transcript.apply(.answerItem("a2"))
+        transcript.apply(.said("Next answer."))
+        #expect(transcript.lines.map(\.text) == ["one two three four", "Next answer."])
+    }
+
+    @Test func nothingPlayedLeavesNoLine() {
+        var transcript = fold([.answerItem("a1"), .said("Never heard at all.")])
+        transcript.keepHeard(fraction: 0)
+        #expect(transcript.lines.isEmpty)
+    }
+
     @Test func theCaptionIsTheLastStorytellerSentence() {
         let transcript = fold([.said("Первое. Второе предложение!"), .heard(itemId: nil, text: "Дальше")])
         #expect(transcript.caption == "Второе предложение!")

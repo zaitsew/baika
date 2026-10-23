@@ -31,6 +31,8 @@ public struct TalkTranscript: Sendable, Hashable {
 
     public private(set) var lines: [TalkLine] = []
     private var next = 1
+    /// The answer was cut short by the person: its late words are not added until the next one.
+    private var discardingAnswer = false
 
     public init() {}
 
@@ -65,13 +67,17 @@ public struct TalkTranscript: Sendable, Hashable {
             if let itemId {
                 lines.removeAll { $0.speaker == .person && $0.itemId == itemId && $0.text.nonBlank == nil }
             }
+        case .answerItem:
+            discardingAnswer = false
         case .sayingDelta(let delta):
+            if discardingAnswer { break }
             if let i = lines.lastIndex(where: { $0.speaker == .storyteller && $0.partial }) {
                 lines[i].text += delta
             } else if !delta.isEmpty {
                 lines.append(TalkLine(id: take(), speaker: .storyteller, text: delta, partial: true))
             }
         case .said(let whole):
+            if discardingAnswer { break }
             if let i = lines.lastIndex(where: { $0.speaker == .storyteller && $0.partial }) {
                 if let clean = whole.nonBlank { lines[i].text = clean }
                 lines[i].partial = false
@@ -89,6 +95,19 @@ public struct TalkTranscript: Sendable, Hashable {
             break
         }
         if lines.count > Self.maxLines { lines.removeFirst(lines.count - Self.maxLines) }
+    }
+
+    /// The person talked over the answer and `fraction` (0...1) of its audio had been played. The
+    /// storyteller's last line keeps that share of its words, cut on a word boundary, so what the
+    /// transcript says is what was heard. Words that arrive late for that answer are dropped.
+    public mutating func keepHeard(fraction: Double) {
+        discardingAnswer = true
+        guard let i = lines.lastIndex(where: { $0.speaker == .storyteller }) else { return }
+        let words = lines[i].text.split(separator: " ", omittingEmptySubsequences: true)
+        let keep = Int((Double(words.count) * min(max(fraction, 0), 1)).rounded(.down))
+        lines[i].text = words.prefix(keep).joined(separator: " ")
+        lines[i].partial = false
+        if lines[i].text.nonBlank == nil { lines.remove(at: i) }
     }
 
     private mutating func take() -> Int {

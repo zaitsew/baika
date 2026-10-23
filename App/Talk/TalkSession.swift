@@ -70,6 +70,8 @@ final class TalkSession {
     /// `conversation.item.truncate` needs when the person interrupts.
     @ObservationIgnored private var answerItemId: String?
     @ObservationIgnored private var playedSeconds: Double = 0
+    /// Seconds of audio the server has sent for the current answer.
+    @ObservationIgnored private var sentSeconds: Double = 0
     /// Bumped by every start and every end, so a callback from a session that has ended (a late
     /// `receive`, a buffer that finished playing) cannot touch the one that replaced it.
     @ObservationIgnored private var generation = 0
@@ -101,6 +103,7 @@ final class TalkSession {
         answerAudioDone = false
         answerItemId = nil
         playedSeconds = 0
+        sentSeconds = 0
         phase = .asking
         beforeStart()
 
@@ -192,6 +195,7 @@ final class TalkSession {
     func setMuted(_ on: Bool) {
         guard on != isMuted else { return }
         isMuted = on
+        audio?.muteFlag.isMuted = on
         gate.setMuted(on)
         level = 0
     }
@@ -242,13 +246,13 @@ final class TalkSession {
     private func pump(_ frames: AsyncStream<TalkFrame>, gen: Int) async {
         for await frame in frames {
             guard generation == gen else { return }
-            level = isMuted ? 0 : frame.level
+            level = frame.muted ? 0 : frame.level
             // Nothing goes up before `session.created`: the server would refuse it, and the
             // person has not been told to talk yet.
             guard isLive, let socket else { continue }
             // Muted: a second of silence in place of the first frames, so the server commits what
             // was said just before the tap; then nothing while the tap keeps draining here.
-            guard let pcm = gate.outgoing(frame.pcm) else { continue }
+            guard let pcm = gate.outgoing(frame.pcm, capturedMuted: frame.muted) else { continue }
             try? await socket.send(.string(RealtimeClientEvent.appendAudio(pcm).text))
         }
     }
@@ -291,6 +295,7 @@ final class TalkSession {
         case .answerItem(let id):
             answerItemId = id
             playedSeconds = 0
+            sentSeconds = 0
             answerAudioDone = false
         case .speechStarted:
             // The person is talking over the answer. What is queued on the phone is dropped now;
@@ -299,6 +304,9 @@ final class TalkSession {
             // answer is usually in its conversation, most of it never spoken aloud.
             if let id = answerItemId, buffersInFlight > 0 || !answerAudioDone {
                 send(.truncate(itemId: id, audioEndMs: Int(playedSeconds * 1000)))
+                // The transcript holds the whole generated answer; keep what was played, so the
+                // caption and a continued conversation do not claim unheard words.
+                transcript.keepHeard(fraction: sentSeconds > 0 ? playedSeconds / sentSeconds : 0)
             }
             answerItemId = nil
             audio?.stopPlayback()
@@ -313,6 +321,7 @@ final class TalkSession {
             buffersInFlight += 1
             outLevel = PCM16.level(of: pcm)
             let seconds = PCM16.seconds(pcm, sampleRate: audio.sampleRate)
+            sentSeconds += seconds
             audio.play(pcm) { [weak self] in
                 Task { @MainActor in self?.played(gen: gen, seconds: seconds) }
             }
