@@ -18,6 +18,7 @@ struct StoryDetailView: View {
     private var player: NarrationPlayer { app.player }
     private var isCurrent: Bool { player.storyID == story.id }
     private var complete: Bool { app.audioIsComplete(story) }
+    private var narrating: Bool { app.narrations.isNarrating(storyID: story.id) }
 
     var body: some View {
         ScrollView {
@@ -90,9 +91,11 @@ struct StoryDetailView: View {
                 Label(complete ? LocalizedStringKey("Play") : LocalizedStringKey("Finish the narration"), systemImage: complete ? "play.fill" : "waveform")
             }
             .buttonStyle(.primary)
-            .disabled(finisher.isBusy)
+            // Perform, or this page, is already narrating the story: a second run would pay for
+            // the same chunks twice.
+            .disabled(finisher.isBusy || narrating)
             if !complete {
-                Text("Part of the audio is not on this device.")
+                Text(narrating ? LocalizedStringKey("Narrating now.") : LocalizedStringKey("Part of the audio is not on this device."))
                     .font(.caption)
                     .foregroundStyle(Theme.muted)
             }

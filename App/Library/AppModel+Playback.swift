@@ -1,30 +1,52 @@
 import BaikaKit
 import Foundation
+import Observation
 
-/// The Perform models that are narrating a story, so deleting the story can stop them.
+/// The Perform models that are narrating a story, so deleting the story can stop them and a
+/// second narrator of the same story is refused. Observable: a story's page hides "Finish the
+/// narration" while any narration of that story runs.
 @MainActor
+@Observable
 final class NarrationRegistry {
     private final class Entry {
         weak var model: PerformModel?
         init(_ model: PerformModel) { self.model = model }
     }
 
-    private var entries: [UUID: [Entry]] = [:]
+    private var claims = NarrationClaims<ObjectIdentifier>()
+    @ObservationIgnored private var models: [UUID: Entry] = [:]
 
-    func register(_ model: PerformModel, storyID: UUID) {
-        entries[storyID, default: []].removeAll { $0.model == nil }
-        entries[storyID, default: []].append(Entry(model))
+    /// Takes the story for `model`. False when a different live model already narrates it.
+    @discardableResult
+    func register(_ model: PerformModel, storyID: UUID) -> Bool {
+        // A model that went away without unregistering does not hold the story.
+        if let entry = models[storyID], entry.model == nil { drop(storyID) }
+        guard claims.claim(storyID, for: ObjectIdentifier(model)) else { return false }
+        models[storyID] = Entry(model)
+        return true
     }
 
     func unregister(_ model: PerformModel, storyID: UUID) {
-        entries[storyID]?.removeAll { $0.model == nil || $0.model === model }
-        if entries[storyID]?.isEmpty == true { entries[storyID] = nil }
+        claims.release(storyID, for: ObjectIdentifier(model))
+        if !claims.isClaimed(storyID) { models[storyID] = nil }
     }
 
-    /// Cancels every narration of the story and returns those screens to idle.
+    /// Some narration of the story is running now.
+    func isNarrating(storyID: UUID) -> Bool {
+        guard claims.isClaimed(storyID) else { return false }
+        return models[storyID]?.model != nil
+    }
+
+    /// Cancels the narration of the story and returns its screen to idle.
     func abandon(storyID: UUID) {
-        let models = (entries.removeValue(forKey: storyID) ?? []).compactMap(\.model)
-        for model in models { model.abandon(storyID: storyID) }
+        let model = models[storyID]?.model
+        drop(storyID)
+        model?.abandon(storyID: storyID)
+    }
+
+    private func drop(_ storyID: UUID) {
+        claims.revoke(storyID)
+        models[storyID] = nil
     }
 }
 
