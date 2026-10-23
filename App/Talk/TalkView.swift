@@ -41,7 +41,8 @@ struct TalkView: View {
         .inkBackground()
         .animation(.easeInOut(duration: 0.25), value: showsLive)
         .sensoryFeedback(.impact, trigger: session.isMuted)
-        .sheet(isPresented: $showConsent) {
+        // A swipe-down dismissal must not leave a stale Continue behind for the next start.
+        .sheet(isPresented: $showConsent, onDismiss: { consentForContinue = false }) {
             TalkConsentSheet {
                 app.setTalkConsent(true)
                 showConsent = false
