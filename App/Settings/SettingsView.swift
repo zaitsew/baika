@@ -27,6 +27,14 @@ struct SettingsView: View {
                     Text("Anthropic writes the story. ElevenLabs reads it aloud, and OpenAI reads it if ElevenLabs is unavailable. Turn this off and Baika asks again before the next story.")
                 }
 
+                Section {
+                    Toggle(
+                        "Send my voice to OpenAI in Talk",
+                        isOn: Binding(get: { app.talkConsented }, set: { app.setTalkConsent($0) }))
+                } footer: {
+                    Text("Talk streams your voice to OpenAI, through Fabrique Accounts, while a conversation is live. Baika does not record it. Turn this off and Baika asks again before the next conversation.")
+                }
+
                 Section("About") {
                     LabeledContent("Version", value: Self.version)
                     Text("Baika is an AI storyteller. Stories are written by AI and can contain mistakes.")

@@ -202,4 +202,16 @@ struct AIConsentTests {
         d.set(AIConsent.currentVersion - 1, forKey: AIConsent.key)
         #expect(!AIConsent.isGiven(in: d))
     }
+
+    @Test func talkHasItsOwnYes() {
+        let d = defaults()
+        AIConsent.set(true, in: d)
+        #expect(!AIConsent.isTalkGiven(in: d))
+        AIConsent.setTalk(true, in: d)
+        #expect(AIConsent.isTalkGiven(in: d))
+        AIConsent.set(false, in: d)
+        #expect(AIConsent.isTalkGiven(in: d))
+        AIConsent.setTalk(false, in: d)
+        #expect(!AIConsent.isTalkGiven(in: d))
+    }
 }

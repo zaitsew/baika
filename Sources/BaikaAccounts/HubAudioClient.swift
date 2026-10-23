@@ -114,7 +114,7 @@ public struct HubAudioClient: NarrationBackend {
 }
 
 /// A redirect would carry the bearer token to another host. The hub never redirects.
-private final class RefuseRedirects: NSObject, URLSessionTaskDelegate, @unchecked Sendable {
+final class RefuseRedirects: NSObject, URLSessionTaskDelegate, @unchecked Sendable {
     func urlSession(
         _ session: URLSession, task: URLSessionTask, willPerformHTTPRedirection response: HTTPURLResponse,
         newRequest request: URLRequest, completionHandler: @escaping (URLRequest?) -> Void

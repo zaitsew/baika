@@ -225,3 +225,95 @@ struct HubScriptBackendTests {
         #expect(text == "Hello")
     }
 }
+
+private final class MintWire: @unchecked Sendable {
+    private let lock = NSLock()
+    private let answer: (Int, Data)
+    private var seen: [URLRequest] = []
+    init(_ status: Int, _ body: String) { answer = (status, Data(body.utf8)) }
+    var requests: [URLRequest] { lock.withLock { seen } }
+    func send(_ request: URLRequest) async throws -> (Data, Int) {
+        lock.withLock { seen.append(request) }
+        return (answer.1, answer.0)
+    }
+}
+
+private func realtime(_ wire: MintWire, token: @escaping @Sendable () async throws -> String = { "tok" }) -> HubRealtimeClient {
+    HubRealtimeClient(
+        functionsURL: URL(string: "https://hub.example.com/functions/v1")!, anonKey: "anon", product: "baika",
+        accessToken: token, send: { try await wire.send($0) })
+}
+
+@Suite("Hub realtime client")
+struct HubRealtimeClientTests {
+    private let session = RealtimeSessionRequest(instructions: "persona")
+
+    @Test func mintPostsTheContractWithTheBearerAndReturnsTheSecret() async throws {
+        let wire = MintWire(200, #"{"value":"ek_1","expires_at":1800000000,"session":{}}"#)
+        let grant = try await realtime(wire).mint(session)
+        #expect(grant.secret == "ek_1")
+        let request = try #require(wire.requests.first)
+        #expect(request.url?.absoluteString == "https://hub.example.com/functions/v1/ai/realtime")
+        #expect(request.httpMethod == "POST")
+        #expect(request.value(forHTTPHeaderField: "Authorization") == "Bearer tok")
+        #expect(request.value(forHTTPHeaderField: "apikey") == "anon")
+        let sent = body(of: request)
+        #expect(sent["product"] as? String == "baika")
+        #expect(sent["minutes"] as? Int == 10)
+        let inner = sent["session"] as? [String: Any]
+        #expect(inner?["model"] as? String == "gpt-realtime-2.1")
+        #expect(((inner?["audio"] as? [String: Any])?["output"] as? [String: Any])?["voice"] as? String == "cedar")
+    }
+
+    @Test func hubErrorsBecomeBackendFailures() async {
+        let cases: [(Int, String, BackendFailure)] = [
+            (402, #"{"error":"budget_exhausted"}"#, .budgetExhausted),
+            (401, "{}", .signedOut),
+            (429, #"{"error":"cap_reached"}"#, .capReached),
+            (400, #"{"error":"session_too_long","message":"too long"}"#, .rejected("too long")),
+            (502, "bad gateway", .unavailable(status: 502, code: nil)),
+        ]
+        for (status, text, expected) in cases {
+            do {
+                _ = try await realtime(MintWire(status, text)).mint(session)
+                Issue.record("expected \(expected)")
+            } catch {
+                #expect(error as? BackendFailure == expected)
+            }
+        }
+    }
+
+    @Test func aSuccessWithoutASecretIsRefused() async {
+        do {
+            _ = try await realtime(MintWire(200, "{}")).mint(session)
+            Issue.record("expected a throw")
+        } catch {
+            #expect(error is BackendFailure)
+        }
+    }
+
+    @Test func noSessionMeansNothingIsSent() async {
+        let wire = MintWire(200, "{}")
+        do {
+            _ = try await realtime(wire, token: { throw BackendFailure.signedOut }).mint(session)
+            Issue.record("expected a throw")
+        } catch {
+            #expect(error as? BackendFailure == .signedOut)
+        }
+        #expect(wire.requests.isEmpty)
+    }
+
+    @Test func aPlainHttpHubNeverSeesTheToken() async {
+        let wire = MintWire(200, "{}")
+        let insecure = HubRealtimeClient(
+            functionsURL: URL(string: "http://hub.example.com/functions/v1")!, anonKey: "anon", product: "baika",
+            accessToken: { "tok" }, send: { try await wire.send($0) })
+        do {
+            _ = try await insecure.mint(session)
+            Issue.record("expected a throw")
+        } catch {
+            #expect(error as? BackendFailure == .unavailable(status: 0, code: "insecure_hub_url"))
+        }
+        #expect(wire.requests.isEmpty)
+    }
+}
