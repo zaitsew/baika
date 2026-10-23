@@ -13,6 +13,8 @@ struct TalkView: View {
     @AppStorage("baika.talk.styleID") private var styleID = StyleCatalog.defaultID
     @AppStorage("baika.language") private var languageRaw = StoryLanguage.default.rawValue
     @State private var showConsent = false
+    /// The consent sheet was opened by Continue, so agreeing continues the conversation.
+    @State private var consentForContinue = false
 
     private var session: TalkSession { app.talk }
     private var language: StoryLanguage { StoryLanguage(rawValue: languageRaw) ?? .default }
@@ -43,9 +45,15 @@ struct TalkView: View {
             TalkConsentSheet {
                 app.setTalkConsent(true)
                 showConsent = false
-                begin()
+                if consentForContinue {
+                    consentForContinue = false
+                    Task { await session.continueConversation() }
+                } else {
+                    begin()
+                }
             } onDecline: {
                 showConsent = false
+                consentForContinue = false
             }
         }
     }
@@ -263,7 +271,7 @@ struct TalkView: View {
     /// withdrawn in Settings since.
     private func resume() {
         guard app.talkConsented else {
-            session.dismissEnded()
+            consentForContinue = true
             showConsent = true
             return
         }

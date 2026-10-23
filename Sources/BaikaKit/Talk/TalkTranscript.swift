@@ -33,6 +33,9 @@ public struct TalkTranscript: Sendable, Hashable {
     private var next = 1
     /// The answer was cut short by the person: its late words are not added until the next one.
     private var discardingAnswer = false
+    /// The line the answer in progress is being written to. Nil until its first word, so a cut
+    /// before that cannot touch the previous answer.
+    private var answerLineID: Int?
 
     public init() {}
 
@@ -69,21 +72,28 @@ public struct TalkTranscript: Sendable, Hashable {
             }
         case .answerItem:
             discardingAnswer = false
+            answerLineID = nil
         case .sayingDelta(let delta):
             if discardingAnswer { break }
             if let i = lines.lastIndex(where: { $0.speaker == .storyteller && $0.partial }) {
                 lines[i].text += delta
+                answerLineID = lines[i].id
             } else if !delta.isEmpty {
-                lines.append(TalkLine(id: take(), speaker: .storyteller, text: delta, partial: true))
+                let id = take()
+                lines.append(TalkLine(id: id, speaker: .storyteller, text: delta, partial: true))
+                answerLineID = id
             }
         case .said(let whole):
             if discardingAnswer { break }
             if let i = lines.lastIndex(where: { $0.speaker == .storyteller && $0.partial }) {
                 if let clean = whole.nonBlank { lines[i].text = clean }
                 lines[i].partial = false
+                answerLineID = lines[i].id
                 if lines[i].text.nonBlank == nil { lines.remove(at: i) }
             } else if let clean = whole.nonBlank {
-                lines.append(TalkLine(id: take(), speaker: .storyteller, text: clean))
+                let id = take()
+                lines.append(TalkLine(id: id, speaker: .storyteller, text: clean))
+                answerLineID = id
             }
         case .responseDone:
             // An answer cut short keeps the words that were said and stops being partial.
@@ -102,7 +112,7 @@ public struct TalkTranscript: Sendable, Hashable {
     /// transcript says is what was heard. Words that arrive late for that answer are dropped.
     public mutating func keepHeard(fraction: Double) {
         discardingAnswer = true
-        guard let i = lines.lastIndex(where: { $0.speaker == .storyteller }) else { return }
+        guard let id = answerLineID, let i = lines.firstIndex(where: { $0.id == id }) else { return }
         let words = lines[i].text.split(separator: " ", omittingEmptySubsequences: true)
         let keep = Int((Double(words.count) * min(max(fraction, 0), 1)).rounded(.down))
         lines[i].text = words.prefix(keep).joined(separator: " ")

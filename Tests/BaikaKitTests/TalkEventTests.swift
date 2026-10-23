@@ -189,6 +189,12 @@ struct TalkTranscriptTests {
         #expect(transcript.lines.map(\.text) == ["one two three four", "Next answer."])
     }
 
+    @Test func aCutBeforeTheNextAnswersFirstWordLeavesThePreviousAnswerAlone() {
+        var transcript = fold([.answerItem("a1"), .said("The first answer, fully heard."), .answerItem("a2")])
+        transcript.keepHeard(fraction: 0)
+        #expect(transcript.lines.map(\.text) == ["The first answer, fully heard."])
+    }
+
     @Test func nothingPlayedLeavesNoLine() {
         var transcript = fold([.answerItem("a1"), .said("Never heard at all.")])
         transcript.keepHeard(fraction: 0)

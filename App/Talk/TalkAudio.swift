@@ -216,6 +216,8 @@ final class TalkAudio {
         private let frames: AsyncStream<TalkFrame>.Continuation
         private let muteFlag: MuteFlag
         private var pending = Data()
+        /// The mute state `pending` was recorded under.
+        private var pendingMuted = false
 
         /// Nil when no converter exists between the two formats: the no-microphone case again.
         init?(
@@ -247,13 +249,25 @@ final class TalkAudio {
                 return buffer
             }
             guard status != .error, out.frameLength > 0, let channels = out.int16ChannelData else { return }
+            // A frame is stamped by the state it was recorded under. When the switch moves, the
+            // half frame waiting under the old state is closed or dropped, never mixed: audio
+            // recorded while muted must not ride out in a frame stamped live.
+            let muted = muteFlag.isMuted
+            if muted != pendingMuted {
+                if !pending.isEmpty, !pendingMuted {
+                    pending.append(Data(count: frameBytes - pending.count))
+                    frames.yield(TalkFrame(pcm: pending, level: PCM16.level(PCM16.samples(pending)), muted: false))
+                }
+                pending.removeAll(keepingCapacity: true)
+                pendingMuted = muted
+            }
             let count = Int(out.frameLength)
             let samples = Array(UnsafeBufferPointer(start: channels[0], count: count))
             pending.append(PCM16.data(samples))
             while pending.count >= frameBytes {
                 let frame = Data(pending.prefix(frameBytes))
                 pending.removeFirst(frameBytes)
-                frames.yield(TalkFrame(pcm: frame, level: PCM16.level(PCM16.samples(frame)), muted: muteFlag.isMuted))
+                frames.yield(TalkFrame(pcm: frame, level: PCM16.level(PCM16.samples(frame)), muted: muted))
             }
         }
     }
