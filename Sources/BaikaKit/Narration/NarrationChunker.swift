@@ -152,7 +152,9 @@ public struct NarrationChunker: Sendable {
                 index = rest.index(after: index)
                 cut = index
             }
-            let end = lastSpace ?? cut
+            // A single grapheme wider than the limit still has to move forward.
+            var end = lastSpace ?? cut
+            if end == rest.startIndex { end = rest.index(after: rest.startIndex) }
             pieces.append(String(rest[..<end]).trimmingCharacters(in: .whitespaces))
             rest = rest[end...].drop { $0 == " " }
         }

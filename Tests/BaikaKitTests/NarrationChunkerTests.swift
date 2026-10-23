@@ -9,6 +9,11 @@ struct NarrationChunkerTests {
         (0..<sentences).map { "Sentence number \($0 + seed) walks along the quiet harbour wall." }.joined(separator: " ")
     }
 
+    @Test func aGraphemeWiderThanTheLimitStillMovesForward() {
+        #expect(NarrationChunker().hardSplit("😀 ok").count >= 1)
+        #expect(NarrationChunker(maxLength: 1, firstChunkLength: 1).hardSplit("😀😀") == ["😀", "😀"])
+    }
+
     @Test func aShortScriptIsOneChunkWithNoContext() {
         let chunks = NarrationChunker().chunks(for: "Hello there. This is short.")
         #expect(chunks.count == 1)
