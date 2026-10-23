@@ -15,7 +15,7 @@ Sign in with a Fabrique Accounts account (Apple, email or link). The app ships i
 
 ## Status
 
-Alpha. Perform (a narrated story) and the Library work. Talk (live voice conversation) is a placeholder tab. Film (generated video) is later. See `docs/ROADMAP.md`.
+Alpha. Perform (a narrated story) and the Library work. Talk (live voice conversation, unverified on a device) is built. Film (generated video) is later. See `docs/ROADMAP.md`.
 
 ## What it does
 
@@ -31,7 +31,7 @@ It does not clone a real person's voice. A style imitates an author's manner in 
 |---|---|
 | `Sources/BaikaKit` | pure logic: styles, voices, prompt, sanitizer, chunker, audio cache, fallback decision |
 | `Sources/BaikaAccounts` | the hub bridge: script stream, `HubAudioClient` |
-| `App/` | SwiftUI app: Perform, Library, Talk placeholder, Settings |
+| `App/` | SwiftUI app: Perform, Library, Talk, Settings |
 | `docs/ARCHITECTURE.md` | how a story flows; the hub contract |
 | `docs/RELEASE.md` | TestFlight steps and the store checklist |
 

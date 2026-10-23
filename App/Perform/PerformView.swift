@@ -45,6 +45,9 @@ struct PerformView: View {
         }
         .inkBackground()
         .animation(.easeInOut(duration: 0.25), value: model.phase == .idle)
+        // "Perform this" in Talk fills the form: the person reads it, changes it, taps Tell.
+        .onAppear(perform: takeDraft)
+        .onChange(of: app.performDraft) { _, _ in takeDraft() }
         .sheet(isPresented: $showConsent) {
             ConsentSheet {
                 app.setConsent(true)
@@ -211,6 +214,14 @@ struct PerformView: View {
     }
 
     // MARK: Action
+
+    private func takeDraft() {
+        guard let draft = app.performDraft else { return }
+        app.performDraft = nil
+        topic = String(draft.topic.prefix(StoryPrompt.maxTopicLength))
+        styleID = draft.styleID
+        languageRaw = draft.language.rawValue
+    }
 
     private func tell() {
         guard canTell, let style = resolvedStyle, !model.isBusy else { return }

@@ -22,13 +22,13 @@
         "en": {
           "stringUnit": {
             "state": "translated",
-            "value": "Baika uses the microphone when you dictate the topic of a story."
+            "value": "Baika uses the microphone when you talk to the storyteller or dictate the topic of a story."
           }
         },
         "ru": {
           "stringUnit": {
             "state": "translated",
-            "value": "Байка использует микрофон, когда вы диктуете тему истории."
+            "value": "Байка использует микрофон, когда вы говорите с рассказчиком или диктуете тему истории."
           }
         }
       }

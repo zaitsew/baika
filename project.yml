@@ -104,5 +104,5 @@ targets:
               - baika
         # The keyboard's dictation button fills in the topic; these are the strings iOS wants
         # for dictation. Localized in App/InfoPlist.xcstrings.
-        NSMicrophoneUsageDescription: Baika uses the microphone when you dictate the topic of a story.
+        NSMicrophoneUsageDescription: Baika uses the microphone when you talk to the storyteller or dictate the topic of a story.
         NSSpeechRecognitionUsageDescription: Baika turns your spoken topic into text so it can write the story.

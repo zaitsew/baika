@@ -43,7 +43,7 @@
 	<key>LSApplicationCategoryType</key>
 	<string>public.app-category.entertainment</string>
 	<key>NSMicrophoneUsageDescription</key>
-	<string>Baika uses the microphone when you dictate the topic of a story.</string>
+	<string>Baika uses the microphone when you talk to the storyteller or dictate the topic of a story.</string>
 	<key>NSSpeechRecognitionUsageDescription</key>
 	<string>Baika turns your spoken topic into text so it can write the story.</string>
 	<key>UIApplicationSupportsIndirectInputEvents</key>

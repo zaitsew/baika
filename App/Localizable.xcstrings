@@ -97,6 +97,22 @@
         }
       }
     },
+    "Agree and talk": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Agree and talk"
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Согласиться и говорить"
+          }
+        }
+      }
+    },
     "Agree and tell": {
       "localizations": {
         "en": {
@@ -141,6 +157,22 @@
           "stringUnit": {
             "state": "translated",
             "value": "Apple не вернул токен входа."
+          }
+        }
+      }
+    },
+    "Ask for a story. Interrupt it. Steer it.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ask for a story. Interrupt it. Steer it."
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Попросите историю. Перебейте. Направьте."
           }
         }
       }
@@ -225,6 +257,22 @@
         }
       }
     },
+    "Before you talk": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Before you talk"
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Перед разговором"
+          }
+        }
+      }
+    },
     "Check %@ for the link.": {
       "localizations": {
         "en": {
@@ -285,6 +333,54 @@
           "stringUnit": {
             "state": "translated",
             "value": "Закрыть"
+          }
+        }
+      }
+    },
+    "Connecting…": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Connecting…"
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Подключаюсь…"
+          }
+        }
+      }
+    },
+    "Continue": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Continue"
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Продолжить"
+          }
+        }
+      }
+    },
+    "Could not connect. Try again.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Could not connect. Try again."
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Не удалось подключиться. Попробуйте ещё раз."
           }
         }
       }
@@ -369,6 +465,22 @@
         }
       }
     },
+    "End": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "End"
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Завершить"
+          }
+        }
+      }
+    },
     "Everything passes through Fabrique Accounts, the sign-in service behind Baika. Stories and audio stay on this iPhone.": {
       "localizations": {
         "en": {
@@ -433,6 +545,22 @@
         }
       }
     },
+    "It passes through Fabrique Accounts, the sign-in service behind Baika. Baika does not record the conversation.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "It passes through Fabrique Accounts, the sign-in service behind Baika. Baika does not record the conversation."
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Он проходит через Fabrique Accounts, сервис входа за Байкой. Байка не записывает разговор."
+          }
+        }
+      }
+    },
     "Language": {
       "localizations": {
         "en": {
@@ -477,6 +605,38 @@
           "stringUnit": {
             "state": "translated",
             "value": "Библиотека"
+          }
+        }
+      }
+    },
+    "Microphone access is off. Open Settings.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Microphone access is off. Open Settings."
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Доступ к микрофону выключен. Открыть настройки."
+          }
+        }
+      }
+    },
+    "Mute": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Mute"
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Выключить микрофон"
           }
         }
       }
@@ -673,6 +833,22 @@
         }
       }
     },
+    "Perform this": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Perform this"
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Рассказать это"
+          }
+        }
+      }
+    },
     "Pick a topic and a style. Hear it told as a story.": {
       "localizations": {
         "en": {
@@ -733,6 +909,38 @@
           "stringUnit": {
             "state": "translated",
             "value": "Прогресс"
+          }
+        }
+      }
+    },
+    "Say something…": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Say something…"
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Скажите что-нибудь…"
+          }
+        }
+      }
+    },
+    "Send my voice to OpenAI in Talk": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Send my voice to OpenAI in Talk"
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Отправлять мой голос в OpenAI в беседе"
           }
         }
       }
@@ -897,22 +1105,6 @@
         }
       }
     },
-    "Soon you will be able to speak with the storyteller out loud, and steer the story as it goes.": {
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Soon you will be able to speak with the storyteller out loud, and steer the story as it goes."
-          }
-        },
-        "ru": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Скоро вы сможете говорить с рассказчиком вслух и направлять историю на ходу."
-          }
-        }
-      }
-    },
     "Stories are written by AI and can contain mistakes.": {
       "localizations": {
         "en": {
@@ -977,18 +1169,18 @@
         }
       }
     },
-    "Talk is coming": {
+    "Talk streams your voice to OpenAI, through Fabrique Accounts, while a conversation is live. Baika does not record it. Turn this off and Baika asks again before the next conversation.": {
       "localizations": {
         "en": {
           "stringUnit": {
             "state": "translated",
-            "value": "Talk is coming"
+            "value": "Talk streams your voice to OpenAI, through Fabrique Accounts, while a conversation is live. Baika does not record it. Turn this off and Baika asks again before the next conversation."
           }
         },
         "ru": {
           "stringUnit": {
             "state": "translated",
-            "value": "Беседа скоро появится"
+            "value": "Во время беседы ваш голос передаётся в OpenAI через Fabrique Accounts. Байка его не записывает. Выключите, и Байка спросит снова перед следующей беседой."
           }
         }
       }
@@ -1073,6 +1265,22 @@
         }
       }
     },
+    "The conversation was interrupted.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "The conversation was interrupted."
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Разговор прервался."
+          }
+        }
+      }
+    },
     "The end": {
       "localizations": {
         "en": {
@@ -1085,6 +1293,22 @@
           "stringUnit": {
             "state": "translated",
             "value": "Конец"
+          }
+        }
+      }
+    },
+    "The microphone or speaker could not start.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "The microphone or speaker could not start."
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Не удалось запустить микрофон или динамик."
           }
         }
       }
@@ -1149,6 +1373,38 @@
           "stringUnit": {
             "state": "translated",
             "value": "История пришла пустой. Попробуйте ещё раз."
+          }
+        }
+      }
+    },
+    "The storyteller is an AI and can make mistakes.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "The storyteller is an AI and can make mistakes."
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Рассказчик — это ИИ, он может ошибаться."
+          }
+        }
+      }
+    },
+    "The ten minutes are up.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "The ten minutes are up."
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Десять минут истекли."
           }
         }
       }
@@ -1261,6 +1517,22 @@
           "stringUnit": {
             "state": "translated",
             "value": "Напишите или нажмите микрофон на клавиатуре, чтобы надиктовать."
+          }
+        }
+      }
+    },
+    "Unmute": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Unmute"
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Включить микрофон"
           }
         }
       }
@@ -1389,6 +1661,22 @@
           "stringUnit": {
             "state": "translated",
             "value": "Тема и выбранный стиль уходят в Anthropic — он пишет историю."
+          }
+        }
+      }
+    },
+    "Your voice is sent live to OpenAI, which answers in a spoken voice.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Your voice is sent live to OpenAI, which answers in a spoken voice."
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ваш голос в реальном времени отправляется в OpenAI, который отвечает голосом."
           }
         }
       }

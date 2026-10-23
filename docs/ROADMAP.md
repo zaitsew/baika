@@ -35,7 +35,8 @@ library or designed voices. ElevenLabs forbids cloning a voice without consent.
 - App: sign in through the accounts hub, Perform screen (topic + style + voice),
   streamed script, narrated playback with lock-screen controls, saved stories library.
 - App: Talk screen ported from Loco's live voice, with a mute button, a pulsing
-  listening state and icon controls.
+  listening state and icon controls. Built; never run on a device (a live session needs
+  Ivan's iPhone and a signed-in account).
 - TestFlight internal build on Ivan's iPhone.
 
 ## Sprint 2 — Film
