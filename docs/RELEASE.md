@@ -6,8 +6,8 @@ Go through the App Store Connect API key. **Never** a password, never the
 Xcode GUI, never an app-specific password.
 
 ```
-<your-release-tool> release --project <path>.xcodeproj --scheme <Scheme> \
-    --bundle-id <id> [--also-bundle-id <widget id>]
+~/ops/bin/testflight release --project Baika.xcodeproj --scheme Baika \
+    --bundle-id com.zaitsew.baika
 ```
 
 Credentials live once, in `~/.appstoreconnect/`: `config.env` holds the key
@@ -19,13 +19,31 @@ the account holder at the keyboard.
 A new machine, or "no signing certificate found", needs
 
 ```
-<your-release-tool> bootstrap --bundle-id <id>
+~/ops/bin/testflight bootstrap --bundle-id com.zaitsew.baika
 ```
 
 once. If the team cannot use cloud-managed distribution certificates, the
 certificate is minted through the REST API with its private key kept local,
 and signing is manual. Don't run bootstrap by habit — a second run mints a
 second certificate, and Apple allows few.
+
+## Before the first upload (not done yet)
+
+- Register `com.zaitsew.baika` and turn on **Sign in with Apple** for the App ID, then
+  `testflight bootstrap --bundle-id com.zaitsew.baika` (profile "com.zaitsew.baika AppStore").
+- Create the App Store Connect app record (name "Baika"; fall back to "Baika: AI Storyteller"
+  if taken), SKU `baika`, primary language English (U.S.), Full Access. Record the app id here.
+- Hub side: product `baika` exists in `accounts.products`; its Apple provider accepts the
+  bundle id `com.zaitsew.baika` as an audience; `ai/narrate` has `ELEVENLABS_API_KEY` set
+  (without it Perform uses the backup voice).
+- Availability: exclude China mainland (`CHN`). Generative AI there needs a Chinese permit.
+- Store listing: no model provider named in the name, subtitle, description, keywords or
+  screenshots. The privacy policy and the in-app AI consent still name Anthropic, ElevenLabs and
+  OpenAI. Support and privacy URLs must be live. App Privacy: email, user id and user content,
+  linked to the user, for app functionality; no tracking.
+- Review information: a demo account on a plan that unlocks everything; note that stories are
+  AI-generated, where Perform and Library are, and why China is excluded.
+- Screenshots for the 6.9-inch iPhone class (the app is iPhone-only).
 
 ## Public beta (TestFlight)
 

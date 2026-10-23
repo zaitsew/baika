@@ -1,86 +1,85 @@
 #!/usr/bin/env bash
-# The first-run check: prints what's missing, verifies the toolchain, runs
-# tests if any exist. Exits non-zero with a clear list if something is wrong.
+# Everything that can be verified from the shell, in one run:
+#   1. swift build + swift test   the engine (BaikaKit) and the hub bridge (BaikaAccounts)
+#   2. xcodegen generate          the Xcode project, from project.yml
+#   3. xcodebuild                 the iOS app, built for the simulator
+# The pre-push hook runs this; there is no CI on push or pull request (POLICY section 10).
 #
-#   ./check.sh
-set -uo pipefail
+#   ./check.sh            everything
+#   ./check.sh quick      step 1 only (seconds)
+#   ./check.sh usage      real-usage counters, read by `teyla products`
+set -euo pipefail
 cd "$(dirname "$0")"
 
-# --- usage mode: real-usage counters, read by `teyla products` --------------
-# Print key=value lines from the product's own store: rows logged, messages
-# sent, sessions this week, active users. Zero is a finding, not an error.
-# What to count per tier: templates/analytics/STANDARD.md in Teyla's repo. A
-# Supabase product reads its counters with: teyla probe-sql <ref> "select …"
+# --- usage mode --------------------------------------------------------------
+# Tier owner (POLICY section 17). Stories and audio live on the phone, so the only server-side
+# trace is the metered calls in the accounts hub. Read-only.
 case "${1:-}" in
   usage)
-    # EDIT ME: replace with real counters, e.g.
-    #   echo "items=$(sqlite3 data/app.db 'select count(*) from items')"
-    echo "usage_probe=not_implemented"
-    exit 0 ;;
+    command -v teyla >/dev/null || { echo "usage_probe=needs_teyla"; exit 0; }
+    rc=0
+    teyla probe-sql swgxlydagofazjtlqeiu "select count(*) as ai_calls_7d, coalesce(round(sum(cost_eur)::numeric, 2), 0) as ai_cost_eur_7d, count(distinct coalesce(user_id::text, external_user_id)) as ai_people_7d from accounts.usage where product = 'baika' and at > now() - interval '7 days'" || rc=1
+    exit "$rc" ;;  # a failed query is a failed probe: teyla products shows the exit code
 esac
 
-missing=()
-warnings=()
+export DEVELOPER_DIR="${DEVELOPER_DIR:-/Applications/Xcode.app/Contents/Developer}"
+unset SDKROOT
 
-# --- env vars listed in .env.example -----------------------------------
-if [ -f .env ]; then
-  set -a
-  # shellcheck disable=SC1091
-  source .env
-  set +a
-fi
-if [ -f .env.example ]; then
-  while IFS= read -r line; do
-    case "$line" in
-      \#*|"") continue ;;
-    esac
-    var="${line%%=*}"
-    [ -z "$var" ] && continue
-    if [ -z "${!var:-}" ]; then
-      missing+=("env: $var (see .env.example)")
-    fi
-  done < .env.example
-fi
-
-# --- toolchain -----------------------------------------------------------
-if [ -f package.json ]; then
-  command -v node >/dev/null 2>&1 || missing+=("toolchain: node (package.json present)")
-  command -v npm  >/dev/null 2>&1 || missing+=("toolchain: npm (package.json present)")
-fi
-if [ -f pyproject.toml ] || [ -f requirements.txt ]; then
-  command -v python3 >/dev/null 2>&1 || missing+=("toolchain: python3")
-fi
-if [ -f Package.swift ] || ls -- *.xcodeproj >/dev/null 2>&1; then
-  command -v swift >/dev/null 2>&1 || missing+=("toolchain: swift")
-fi
-if [ -f Cargo.toml ]; then
-  command -v cargo >/dev/null 2>&1 || missing+=("toolchain: cargo")
-fi
-
-if [ "${#missing[@]}" -gt 0 ]; then
-  echo "MISSING:"
-  for m in "${missing[@]}"; do echo "  - $m"; done
+if ! command -v swift >/dev/null 2>&1; then
+  if [ "${CLAUDE_CODE_REMOTE:-}" = "true" ]; then
+    # A cloud session has no Mac: say so, and the PR gets the needs-mac label.
+    echo "skip: swift not available (needs a Mac)"
+    exit 0
+  fi
+  echo "check.sh: swift is not on PATH; install Xcode or its command line tools" >&2
   exit 1
 fi
 
-# --- tests, if any exist ---------------------------------------------------
-ran_tests=0
-if [ -f package.json ] && command -v npm >/dev/null 2>&1; then
-  npm test && ran_tests=1 || { echo "npm test FAILED"; exit 1; }
-fi
-if { [ -f pyproject.toml ] || [ -d tests ]; } && command -v python3 >/dev/null 2>&1; then
-  if python3 -m pytest --version >/dev/null 2>&1; then
-    python3 -m pytest -q && ran_tests=1 || { echo "pytest FAILED"; exit 1; }
-  fi
-fi
-if [ -f Package.swift ] && command -v swift >/dev/null 2>&1; then
-  swift build && swift test && ran_tests=1 || { echo "swift test FAILED"; exit 1; }
+# --- 1. the engine ---------------------------------------------------------------
+echo "== swift build"
+swift build 2>&1 | tail -3
+
+echo "== swift test"
+log="$(mktemp -t baika-test)"
+if swift test >"$log" 2>&1; then
+  tail -4 "$log"
+  rm -f "$log"
+else
+  status=$?
+  echo "--- failing tests ---"
+  grep -E "✘|recorded an issue|error:" "$log" || true
+  echo "--- tail ---"
+  tail -5 "$log"
+  echo "full output: $log"
+  exit "$status"
 fi
 
-if [ "$ran_tests" -eq 0 ]; then
-  warnings+=("no test runner found — nothing was actually run")
+if [ "${1:-}" = "quick" ]; then
+  echo "OK (quick: the app build was skipped)"
+  exit 0
+fi
+
+# --- 2 and 3. the app --------------------------------------------------------------
+if ! command -v xcodegen >/dev/null 2>&1; then
+  echo "check.sh: xcodegen is not on PATH (brew install xcodegen)" >&2
+  exit 1
+fi
+echo "== xcodegen"
+xcodegen generate --quiet
+
+echo "== xcodebuild (iOS simulator)"
+log="$(mktemp -t baika-build)"
+if xcodebuild -project Baika.xcodeproj -scheme Baika \
+     -destination 'generic/platform=iOS Simulator' -derivedDataPath DerivedData \
+     CODE_SIGNING_ALLOWED=NO build >"$log" 2>&1; then
+  tail -2 "$log"
+  rm -f "$log"
+else
+  status=$?
+  echo "--- build errors ---"
+  grep -E "error:" "$log" | sort -u | head -30 || true
+  echo "full output: $log"
+  exit "$status"
 fi
 
 echo "OK"
-for w in "${warnings[@]}"; do echo "  note: $w"; done
-exit 0
