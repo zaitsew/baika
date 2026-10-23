@@ -83,7 +83,9 @@ struct StoryDetailView: View {
                 PlayerControls(player: player)
             }
             .card(padding: 20)
-        } else {
+        }
+        // Missing chunks can be narrated whether or not this story is the one loaded.
+        if !isCurrent || !complete {
             Button(action: play) {
                 Label(complete ? LocalizedStringKey("Play") : LocalizedStringKey("Finish the narration"), systemImage: complete ? "play.fill" : "waveform")
             }

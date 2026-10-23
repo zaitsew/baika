@@ -12,6 +12,7 @@ final class AppModel {
     let accounts: AccountsClient
     let player = NarrationPlayer()
     let cache = AudioCache.standard()
+    let narrations = NarrationRegistry()
     let scriptWriter: ScriptWriter
     let narrator: any NarrationBackend
 

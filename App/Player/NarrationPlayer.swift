@@ -1,4 +1,5 @@
 import AVFoundation
+import BaikaKit
 import MediaPlayer
 import Observation
 
@@ -48,6 +49,9 @@ final class NarrationPlayer {
     @ObservationIgnored private var observers: [any NSObjectProtocol] = []
     @ObservationIgnored private var commandsInstalled = false
     @ObservationIgnored private var lastNowPlayingSecond = -1
+    @ObservationIgnored private var generation = PlaybackGeneration()
+    /// Playback was running when an interruption began, so it may resume when it ends.
+    @ObservationIgnored private var playingBeforeInterruption = false
 
     /// How far a skip button jumps.
     nonisolated static let skipSeconds: TimeInterval = 15
@@ -110,13 +114,16 @@ final class NarrationPlayer {
         max(1, Double(characters) / charactersPerSecond)
     }
 
-    /// A chunk's file is ready.
-    func enqueue(index: Int, url: URL) {
+    /// A chunk's file is ready. A chunk of a story the player no longer holds is dropped.
+    func enqueue(storyID: UUID, index: Int, url: URL) {
+        guard ChunkOwnership.accepts(chunkStory: storyID, playing: self.storyID) else { return }
         guard urls.indices.contains(index) else { return }
         urls[index] = url
+        let token = generation.value
         Task { [weak self] in
             let seconds = try? await AVURLAsset(url: url).load(.duration).seconds
-            if let seconds, seconds.isFinite, seconds > 0 { self?.setDuration(seconds, for: index) }
+            guard let self, self.generation.isCurrent(token) else { return }
+            if let seconds, seconds.isFinite, seconds > 0 { self.setDuration(seconds, for: index) }
         }
         queueAvailable()
     }
@@ -192,6 +199,8 @@ final class NarrationPlayer {
     // MARK: Queue
 
     private func reset() {
+        generation.advance()
+        playingBeforeInterruption = false
         player.pause()
         player.removeAllItems()
         indexOfItem.removeAll()
@@ -328,10 +337,13 @@ final class NarrationPlayer {
         guard let type, let kind = AVAudioSession.InterruptionType(rawValue: type) else { return }
         switch kind {
         case .began:
+            playingBeforeInterruption = state == .playing
             if state == .playing { pause() }
         case .ended:
             let resume = AVAudioSession.InterruptionOptions(rawValue: options ?? 0).contains(.shouldResume)
-            if resume, state == .paused { self.resume() }
+            let wasPlaying = playingBeforeInterruption
+            playingBeforeInterruption = false
+            if resume, wasPlaying, state == .paused { self.resume() }
         @unknown default:
             break
         }

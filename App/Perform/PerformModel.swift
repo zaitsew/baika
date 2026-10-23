@@ -107,6 +107,15 @@ final class PerformModel {
         resetScreen()
     }
 
+    /// The story was deleted: stop narrating it and leave the screen.
+    func abandon(storyID: UUID) {
+        guard run?.story.id == storyID else { return }
+        task?.cancel()
+        task = nil
+        run = nil
+        resetScreen()
+    }
+
     private func resetScreen() {
         phase = .idle
         title = ""
@@ -162,6 +171,8 @@ final class PerformModel {
         let story = run.story
         let id = story.id
         let player = app.player
+        app.narrations.register(self, storyID: id)
+        defer { app.narrations.unregister(self, storyID: id) }
         player.start(
             storyID: id, title: story.title,
             chunkEstimates: run.chunks.map { NarrationPlayer.estimate(characters: $0.text.utf16.count) })
@@ -169,13 +180,18 @@ final class PerformModel {
         settings.preferBackup = settings.preferBackup || usedBackupVoice
         do {
             for chunk in run.chunks {
+                try Task.checkCancellation()
+                // Another story took the player: stop here, nobody is listening to this one.
+                guard player.storyID == id else { return stepAside() }
                 let name = AudioCache.fileName(forChunk: chunk.index)
                 if !app.cache.exists(storyID: id, fileName: name) {
                     // Chunk n+1 is requested once chunk n-1 has started playing, so there is
                     // always one chunk ahead and a person who pauses does not pay for the rest.
                     while !player.hasStarted(chunk: chunk.index - 1) {
                         try await Task.sleep(for: .milliseconds(250))
+                        guard player.storyID == id else { return stepAside() }
                     }
+                    try Task.checkCancellation()
                     let audio = try await app.narrator.narrate(chunk, settings: settings)
                     try Task.checkCancellation()
                     try app.cache.write(audio.data, storyID: id, chunkIndex: chunk.index)
@@ -184,19 +200,30 @@ final class PerformModel {
                         settings.preferBackup = true
                     }
                 }
-                player.enqueue(index: chunk.index, url: app.cache.url(for: id, fileName: name))
+                player.enqueue(storyID: id, index: chunk.index, url: app.cache.url(for: id, fileName: name))
             }
             let urls = run.chunks.map { app.cache.url(for: id, fileName: AudioCache.fileName(forChunk: $0.index)) }
-            story.durationSeconds = await AudioTools.totalDuration(of: urls)
+            let total = await AudioTools.totalDuration(of: urls)
+            try Task.checkCancellation()
+            story.durationSeconds = total
             try? context.save()
             if phase == .narrating { phase = .done }
         } catch is CancellationError {
             return
         } catch {
+            // A cancelled request can surface as a URL error: the story is gone, say nothing.
+            if Task.isCancelled { return }
             // What arrived keeps playing; the player treats it as the whole story.
             player.endProduction()
             fail(error)
         }
+    }
+
+    /// The player now holds another story. What was narrated stays saved; the story's page can
+    /// finish the rest.
+    private func stepAside() {
+        run = nil
+        resetScreen()
     }
 
     private func fail(_ error: any Error) {
