@@ -1,0 +1,108 @@
+# Baika — the Xcode project, as a spec.
+#
+#   xcodegen generate      # produces Baika.xcodeproj (gitignored)
+#
+# One iOS application target. The engine comes from the local Swift package in this directory,
+# so the package tests and Xcode compile exactly the same files.
+name: Baika
+
+options:
+  bundleIdPrefix: com.zaitsew
+  deploymentTarget:
+    iOS: "26.0"
+  createIntermediateGroups: true
+  generateEmptyDirectories: true
+
+configs:
+  Debug: debug
+  Release: release
+
+settings:
+  base:
+    SWIFT_VERSION: "6.0"
+    SWIFT_STRICT_CONCURRENCY: complete
+    MARKETING_VERSION: "0.1.0"
+    CURRENT_PROJECT_VERSION: "1"
+    ENABLE_USER_SCRIPT_SANDBOXING: YES
+    DEVELOPMENT_TEAM: VWH2FKV78Q
+    CODE_SIGN_STYLE: Automatic
+
+packages:
+  BaikaKit:
+    path: .
+  accounts:
+    url: https://github.com/Fabrique-Futur/accounts.git
+    from: 0.1.7
+
+targets:
+  Baika:
+    type: application
+    platform: iOS
+    sources:
+      - path: App
+    dependencies:
+      - package: BaikaKit
+        product: BaikaKit
+      # The hub bridge: sign-in, the script stream, the narration request.
+      - package: BaikaKit
+        product: BaikaAccounts
+      - package: accounts
+        product: FabriqueAccounts
+    entitlements:
+      path: App/Baika.entitlements
+      properties:
+        # Sign in with Apple is the sign-in. The capability must be on the App ID before an
+        # archive (docs/RELEASE.md).
+        com.apple.developer.applesignin:
+          - Default
+    settings:
+      configs:
+        # Archiving for TestFlight is manual-signed, like Finca: this team is refused
+        # cloud-managed distribution certificates. The named profile is the one
+        # `testflight bootstrap --bundle-id com.zaitsew.baika` installs.
+        Release:
+          "CODE_SIGN_STYLE[sdk=iphoneos*]": Manual
+          "CODE_SIGN_IDENTITY[sdk=iphoneos*]": Apple Distribution
+          "PROVISIONING_PROFILE_SPECIFIER[sdk=iphoneos*]": com.zaitsew.baika AppStore
+      base:
+        PRODUCT_NAME: Baika
+        PRODUCT_BUNDLE_IDENTIFIER: com.zaitsew.baika
+        # iPhone only (POLICY section 14). Set on the target itself: XcodeGen's iOS target
+        # default is "1,2" and overrides the project level (POLICY section 15).
+        TARGETED_DEVICE_FAMILY: "1"
+        SUPPORTS_MACCATALYST: NO
+        SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD: NO
+        ASSETCATALOG_COMPILER_APPICON_NAME: AppIcon
+        ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME: AccentColor
+        SWIFT_EMIT_LOC_STRINGS: YES
+        LOCALIZATION_PREFERS_STRING_CATALOGS: YES
+    info:
+      path: App/Info.plist
+      properties:
+        CFBundleDisplayName: Baika
+        CFBundleDevelopmentRegion: en
+        CFBundleLocalizations: [en, ru]
+        CFBundleShortVersionString: $(MARKETING_VERSION)
+        CFBundleVersion: $(CURRENT_PROJECT_VERSION)
+        ITSAppUsesNonExemptEncryption: false
+        LSApplicationCategoryType: public.app-category.entertainment
+        UILaunchScreen:
+          UIColorName: LaunchBackground
+        UISupportedInterfaceOrientations:
+          - UIInterfaceOrientationPortrait
+        UIApplicationSupportsIndirectInputEvents: true
+        # The warm dark theme is the only theme.
+        UIUserInterfaceStyle: Dark
+        # Narration keeps playing with the screen locked.
+        UIBackgroundModes:
+          - audio
+        # A sign-in link comes back to baika://auth-callback.
+        CFBundleURLTypes:
+          - CFBundleURLName: com.zaitsew.baika
+            CFBundleTypeRole: Viewer
+            CFBundleURLSchemes:
+              - baika
+        # The keyboard's dictation button fills in the topic; these are the strings iOS wants
+        # for dictation. Localized in App/InfoPlist.xcstrings.
+        NSMicrophoneUsageDescription: Baika uses the microphone when you dictate the topic of a story.
+        NSSpeechRecognitionUsageDescription: Baika turns your spoken topic into text so it can write the story.

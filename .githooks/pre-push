@@ -1,0 +1,8 @@
+#!/usr/bin/env bash
+set -euo pipefail
+cd "$(git rev-parse --show-toplevel)"
+# Git exports GIT_DIR to hooks (a worktree's .git/worktrees/<name>). SwiftPM runs git inside
+# .build/repositories and inherits it, so every package checkout looks for its commits in
+# this repo and fails. check.sh needs none of these; the cwd is already the top level.
+unset GIT_DIR GIT_WORK_TREE GIT_INDEX_FILE GIT_PREFIX
+exec ./check.sh
