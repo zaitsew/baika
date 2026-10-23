@@ -497,6 +497,22 @@
         }
       }
     },
+    "Narrating now.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Narrating now."
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Рассказ уже идёт."
+          }
+        }
+      }
+    },
     "New story": {
       "localizations": {
         "en": {

@@ -59,6 +59,8 @@ final class PerformModel {
     /// Narrate again from the first missing chunk, after a failure.
     func retryNarration(app: AppModel, context: ModelContext) {
         guard canRetryNarration, let run else { return }
+        // Another screen is narrating this story now: it finishes the job.
+        guard app.narrations.register(self, storyID: run.story.id) else { return stepAside() }
         error = nil
         phase = .narrating
         task = Task { [weak self] in
@@ -70,6 +72,8 @@ final class PerformModel {
     /// that was deleted), then plays it from the start.
     func finishNarration(of story: Story, app: AppModel, context: ModelContext) {
         guard !isBusy else { return }
+        // A second narrator would send the same paid requests and overwrite the same files.
+        guard !app.narrations.isNarrating(storyID: story.id) else { return }
         resetScreen()
         title = story.title
         text = story.readableScript
@@ -91,6 +95,11 @@ final class PerformModel {
         let run = Run(
             story: story, chunks: chunks,
             settings: NarrationSettings(voice: voice, style: style, language: story.storyLanguage))
+        // Claim the story now, not when the task starts: a second tap must find it taken.
+        guard app.narrations.register(self, storyID: story.id) else {
+            resetScreen()
+            return
+        }
         self.run = run
         phase = .narrating
         task = Task { [weak self] in
@@ -171,8 +180,9 @@ final class PerformModel {
         let story = run.story
         let id = story.id
         let player = app.player
-        app.narrations.register(self, storyID: id)
         defer { app.narrations.unregister(self, storyID: id) }
+        // Only one narration of a story at a time; a cancelled task has nothing to start.
+        guard !Task.isCancelled, app.narrations.register(self, storyID: id) else { return stepAside() }
         player.start(
             storyID: id, title: story.title,
             chunkEstimates: run.chunks.map { NarrationPlayer.estimate(characters: $0.text.utf16.count) })
@@ -213,8 +223,9 @@ final class PerformModel {
         } catch {
             // A cancelled request can surface as a URL error: the story is gone, say nothing.
             if Task.isCancelled { return }
-            // What arrived keeps playing; the player treats it as the whole story.
-            player.endProduction()
+            // What arrived keeps playing; the player treats it as the whole story. Only while
+            // this narration still owns the player: a story that displaced it keeps its count.
+            player.endProduction(storyID: id)
             fail(error)
         }
     }

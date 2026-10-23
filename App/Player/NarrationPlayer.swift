@@ -129,8 +129,10 @@ final class NarrationPlayer {
     }
 
     /// No more chunks will arrive (an error ended the narration early). What has arrived is the
-    /// whole story as far as the player is concerned.
-    func endProduction() {
+    /// whole story as far as the player is concerned. Ignored when the player holds another
+    /// story now: a narration displaced by it must not cut its chunk count short.
+    func endProduction(storyID: UUID) {
+        guard ChunkOwnership.accepts(chunkStory: storyID, playing: self.storyID) else { return }
         let arrived = urls.prefix { $0 != nil }.count
         guard arrived < expectedChunks else { return }
         expectedChunks = arrived
