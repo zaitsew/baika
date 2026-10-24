@@ -27,16 +27,26 @@ certificate is minted through the REST API with its private key kept local,
 and signing is manual. Don't run bootstrap by habit — a second run mints a
 second certificate, and Apple allows few.
 
-## Before the first upload (not done yet)
+## App Store Connect record
 
-- Register `com.zaitsew.baika` and turn on **Sign in with Apple** for the App ID, then
-  `testflight bootstrap --bundle-id com.zaitsew.baika` (profile "com.zaitsew.baika AppStore").
-- Create the App Store Connect app record (name "Baika"; fall back to "Baika: AI Storyteller"
-  if taken), SKU `baika`, primary language English (U.S.), Full Access. Record the app id here.
-- Hub side: product `baika` exists in `accounts.products`; its Apple provider accepts the
-  bundle id `com.zaitsew.baika` as an audience; `ai/narrate` has `ELEVENLABS_API_KEY` set
+| field | value |
+|---|---|
+| app id | 6826532153 |
+| store name | Baika |
+| SKU | `baika` |
+| bundle id | `com.zaitsew.baika` (App ID resource GGG3WKASAT, Sign in with Apple on) |
+| primary language | English (U.S.) |
+| user access | Full Access |
+| availability | 174 of 175 territories; China mainland (`CHN`) off |
+
+Created 2026-10-24 in the App Store Connect website (Apple's API cannot create apps).
+`scripts/store.py availability` checks the China rule and `--apply` restores it;
+`scripts/store.py listing` fails when a store or TestFlight text names a model provider.
+
+## Still open before a public release
+
+- Hub side: `ai/narrate` needs `ELEVENLABS_API_KEY` set on the accounts project
   (without it Perform uses the backup voice).
-- Availability: exclude China mainland (`CHN`). Generative AI there needs a Chinese permit.
 - Store listing: no model provider named in the name, subtitle, description, keywords or
   screenshots. The privacy policy and the in-app AI consent still name Anthropic, ElevenLabs and
   OpenAI. Support and privacy URLs must be live. App Privacy: email, user id and user content,
