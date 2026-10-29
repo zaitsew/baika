@@ -4,12 +4,17 @@
 The table is the single place the Russian interface copy lives. English is the source
 language; a key with no entry here simply shows its English text.
 
-    python3 scripts/make-strings.py
+    python3 scripts/make-strings.py [OUT_DIR]
+
+OUT_DIR defaults to App/. Tests/BaikaKitTests/StringsCatalogTests.swift runs it into a temp
+directory and fails when the output differs from the committed catalogs, so a hand edit of a
+.xcstrings file has to be made here too.
 """
 import json
 import pathlib
+import sys
 
-ROOT = pathlib.Path(__file__).resolve().parent.parent / "App"
+ROOT = pathlib.Path(sys.argv[1]) if len(sys.argv) > 1 else pathlib.Path(__file__).resolve().parent.parent / "App"
 
 # key (English, as written in the code) -> Russian
 UI = {
@@ -75,8 +80,25 @@ UI = {
     "Share audio": "Поделиться аудио",
     "The audio could not be prepared for sharing.": "Не удалось подготовить аудио.",
     # Talk
-    "Talk is coming": "Беседа скоро появится",
-    "Soon you will be able to speak with the storyteller out loud, and steer the story as it goes.": "Скоро вы сможете говорить с рассказчиком вслух и направлять историю на ходу.",
+    "Ask for a story. Interrupt it. Steer it.": "Попросите историю. Перебейте. Направьте.",
+    "Say something…": "Скажите что-нибудь…",
+    "Connecting…": "Подключаюсь…",
+    "Mute": "Выключить микрофон",
+    "Unmute": "Включить микрофон",
+    "End": "Завершить",
+    "Continue": "Продолжить",
+    "Perform this": "Рассказать это",
+    "Narrating now.": "Рассказ уже идёт.",
+    "Microphone access is off. Open Settings.": "Доступ к микрофону выключен. Открыть настройки.",
+    "The conversation was interrupted.": "Разговор прервался.",
+    "Could not connect. Try again.": "Не удалось подключиться. Попробуйте ещё раз.",
+    "The microphone or speaker could not start.": "Не удалось запустить микрофон или динамик.",
+    "The ten minutes are up.": "Десять минут истекли.",
+    "Before you talk": "Перед разговором",
+    "Your voice is sent live to OpenAI, which answers in a spoken voice.": "Ваш голос в реальном времени отправляется в OpenAI, который отвечает голосом.",
+    "It passes through Fabrique Accounts, the sign-in service behind Baika. Baika does not record the conversation.": "Он проходит через Fabrique Accounts, сервис входа за Байкой. Байка не записывает разговор.",
+    "The storyteller is an AI and can make mistakes.": "Рассказчик — это ИИ, он может ошибаться.",
+    "Agree and talk": "Согласиться и говорить",
     # Sign-in
     "Pick a topic and a style. Hear it told as a story.": "Выберите тему и стиль. Послушайте, как это расскажут.",
     "or": "или",
@@ -96,6 +118,8 @@ UI = {
     "Send topics to AI providers": "Отправлять темы ИИ-провайдерам",
     "AI": "ИИ",
     "Anthropic writes the story. ElevenLabs reads it aloud, and OpenAI reads it if ElevenLabs is unavailable. Turn this off and Baika asks again before the next story.": "Историю пишет Anthropic. Вслух читает ElevenLabs, а если он недоступен — OpenAI. Выключите, и Байка спросит снова перед следующей историей.",
+    "Send my voice to OpenAI in Talk": "Отправлять мой голос в OpenAI в беседе",
+    "Talk streams your voice to OpenAI, through Fabrique Accounts, while a conversation is live. Baika does not record it. Turn this off and Baika asks again before the next conversation.": "Во время беседы ваш голос передаётся в OpenAI через Fabrique Accounts. Байка его не записывает. Выключите, и Байка спросит снова перед следующей беседой.",
     "About": "О приложении",
     "Version": "Версия",
     "Baika is an AI storyteller. Stories are written by AI and can contain mistakes.": "Байка — рассказчик на основе ИИ. Истории пишет ИИ, в них бывают ошибки.",
@@ -143,8 +167,8 @@ SHORTCUT_PHRASES = {
 INFO = {
     "CFBundleDisplayName": ("Baika", "Байка"),
     "NSMicrophoneUsageDescription": (
-        "Baika uses the microphone when you dictate the topic of a story.",
-        "Байка использует микрофон, когда вы диктуете тему истории.",
+        "Baika uses the microphone when you talk to the storyteller or dictate the topic of a story.",
+        "Байка использует микрофон, когда вы говорите с рассказчиком или диктуете тему истории.",
     ),
     "NSSpeechRecognitionUsageDescription": (
         "Baika turns your spoken topic into text so it can write the story.",
@@ -168,7 +192,7 @@ def catalog(entries):
 def write(name, entries):
     path = ROOT / name
     path.write_text(json.dumps(catalog(entries), ensure_ascii=False, indent=2, sort_keys=True) + "\n")
-    print(f"wrote {path.relative_to(ROOT.parent)} ({len(entries)} keys)")
+    print(f"wrote {path} ({len(entries)} keys)")
 
 
 write("Localizable.xcstrings", {key: (key, ru) for key, ru in UI.items()})
