@@ -1,6 +1,22 @@
 {
   "sourceLanguage": "en",
   "strings": {
+    "%@ is still being narrated. I opened it.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%@ is still being narrated. I opened it."
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "«%@» ещё озвучивается. История открыта."
+          }
+        }
+      }
+    },
     "%@ of %@": {
       "localizations": {
         "en": {
@@ -45,6 +61,22 @@
           "stringUnit": {
             "state": "translated",
             "value": "История для слуха — на любую тему."
+          }
+        }
+      }
+    },
+    "A writer or a manner, for example Dovlatov or a noir detective. Empty keeps your last choice.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "A writer or a manner, for example Dovlatov or a noir detective. Empty keeps your last choice."
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Писатель или манера, например Довлатов или нуар-детектив. Пусто — останется прошлый выбор."
           }
         }
       }
@@ -365,6 +397,38 @@
           "stringUnit": {
             "state": "translated",
             "value": "Продолжить"
+          }
+        }
+      }
+    },
+    "Continue the story": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Continue the story"
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Продолжить историю"
+          }
+        }
+      }
+    },
+    "Continuing %@.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Continuing %@."
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Продолжаем: %@."
           }
         }
       }
@@ -753,6 +817,22 @@
         }
       }
     },
+    "Part of the audio for %@ is not on this iPhone. I opened it.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Part of the audio for %@ is not on this iPhone. I opened it."
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Часть аудио для «%@» нет на этом iPhone. История открыта."
+          }
+        }
+      }
+    },
     "Part of the audio is not on this device.": {
       "localizations": {
         "en": {
@@ -881,6 +961,54 @@
         }
       }
     },
+    "Play on a story you paused, or write and narrate the next part of your latest story.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Play on a story you paused, or write and narrate the next part of your latest story."
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Продолжить историю с паузы или написать и озвучить следующую часть последней истории."
+          }
+        }
+      }
+    },
+    "Play your newest story again from the start. It plays from this iPhone, without a connection.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Play your newest story again from the start. It plays from this iPhone, without a connection."
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Включить новейшую историю с начала. Она играет с этого iPhone, без интернета."
+          }
+        }
+      }
+    },
+    "Playing %@.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Playing %@."
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Играет: %@."
+          }
+        }
+      }
+    },
     "Preparing the voice…": {
       "localizations": {
         "en": {
@@ -909,6 +1037,22 @@
           "stringUnit": {
             "state": "translated",
             "value": "Прогресс"
+          }
+        }
+      }
+    },
+    "Replay my last story": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Replay my last story"
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Повторить последнюю историю"
           }
         }
       }
@@ -1105,6 +1249,22 @@
         }
       }
     },
+    "Stories": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Stories"
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Истории"
+          }
+        }
+      }
+    },
     "Stories are written by AI and can contain mistakes.": {
       "localizations": {
         "en": {
@@ -1201,6 +1361,22 @@
         }
       }
     },
+    "Tell a story": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Tell a story"
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Рассказать историю"
+          }
+        }
+      }
+    },
     "Tell a story from the Perform tab once to agree to the AI terms.": {
       "localizations": {
         "en": {
@@ -1229,6 +1405,22 @@
           "stringUnit": {
             "state": "translated",
             "value": "Рассказываю"
+          }
+        }
+      }
+    },
+    "Telling a story about %@.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Telling a story about %@."
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Рассказываю историю: %@."
           }
         }
       }
@@ -1585,6 +1777,54 @@
         }
       }
     },
+    "What the story is about.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "What the story is about."
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "О чём история."
+          }
+        }
+      }
+    },
+    "Write a story on a topic in a style, narrate it aloud and open the player.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Write a story on a topic in a style, narrate it aloud and open the player."
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Написать историю на тему в выбранном стиле, озвучить и открыть плеер."
+          }
+        }
+      }
+    },
+    "Writing the next part of %@.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Writing the next part of %@."
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Пишу продолжение: %@."
+          }
+        }
+      }
+    },
     "Writing your story…": {
       "localizations": {
         "en": {
@@ -1613,6 +1853,22 @@
           "stringUnit": {
             "state": "translated",
             "value": "Вы не вошли. Войдите на вкладке «Рассказ», чтобы заказывать истории. Библиотека работает без аккаунта."
+          }
+        }
+      }
+    },
+    "You have no stories yet. Ask for one first.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "You have no stories yet. Ask for one first."
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Историй пока нет. Сначала закажите одну."
           }
         }
       }

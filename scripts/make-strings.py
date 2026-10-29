@@ -111,6 +111,33 @@ UI = {
     "The service is unavailable right now. Try again in a moment.": "Сервис сейчас недоступен. Попробуйте через минуту.",
     "No connection. Check the network and try again.": "Нет соединения. Проверьте сеть и повторите.",
     "The voice returned no audio. Try again.": "Голос не вернул звук. Попробуйте ещё раз.",
+    # App Intents (Siri, Shortcuts, Spotlight)
+    "Tell a story": "Рассказать историю",
+    "Write a story on a topic in a style, narrate it aloud and open the player.": "Написать историю на тему в выбранном стиле, озвучить и открыть плеер.",
+    "Stories": "Истории",
+    "What the story is about.": "О чём история.",
+    "A writer or a manner, for example Dovlatov or a noir detective. Empty keeps your last choice.": "Писатель или манера, например Довлатов или нуар-детектив. Пусто — останется прошлый выбор.",
+    "Telling a story about %@.": "Рассказываю историю: %@.",
+    "Replay my last story": "Повторить последнюю историю",
+    "Play your newest story again from the start. It plays from this iPhone, without a connection.": "Включить новейшую историю с начала. Она играет с этого iPhone, без интернета.",
+    "You have no stories yet. Ask for one first.": "Историй пока нет. Сначала закажите одну.",
+    "Playing %@.": "Играет: %@.",
+    "Part of the audio for %@ is not on this iPhone. I opened it.": "Часть аудио для «%@» нет на этом iPhone. История открыта.",
+    "%@ is still being narrated. I opened it.": "«%@» ещё озвучивается. История открыта.",
+    "Continue the story": "Продолжить историю",
+    "Play on a story you paused, or write and narrate the next part of your latest story.": "Продолжить историю с паузы или написать и озвучить следующую часть последней истории.",
+    "Continuing %@.": "Продолжаем: %@.",
+    "Writing the next part of %@.": "Пишу продолжение: %@.",
+}
+
+SHORTCUT_PHRASES = {
+    "Tell me a story with ${applicationName}": "Расскажи мне историю в ${applicationName}",
+    "Tell a story in ${applicationName}": "Расскажи историю в ${applicationName}",
+    "Ask ${applicationName} for a story": "Попроси ${applicationName} рассказать историю",
+    "Replay my last story in ${applicationName}": "Повтори мою последнюю историю в ${applicationName}",
+    "Play my last ${applicationName} story again": "Включи ещё раз мою последнюю историю в ${applicationName}",
+    "Continue the story in ${applicationName}": "Продолжи историю в ${applicationName}",
+    "Continue my story with ${applicationName}": "Продолжи мою историю в ${applicationName}",
 }
 
 INFO = {
@@ -146,3 +173,4 @@ def write(name, entries):
 
 write("Localizable.xcstrings", {key: (key, ru) for key, ru in UI.items()})
 write("InfoPlist.xcstrings", INFO)
+write("AppShortcuts.xcstrings", {key: (key, ru) for key, ru in SHORTCUT_PHRASES.items()})

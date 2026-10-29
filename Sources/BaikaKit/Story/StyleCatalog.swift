@@ -86,6 +86,51 @@ public enum StyleCatalog {
         return String(flat.prefix(maxCustomLength)).trimmingCharacters(in: .whitespacesAndNewlines)
     }
 
+    /// What a person said for the style ("Zhvanetsky", "in the style of Dovlatov", "в стиле
+    /// Жванецкого", "a noir detective"): a preset when the words name one, otherwise their own
+    /// style. Nil for nothing. Russian endings are forgiven ("Жванецкого" is Жванецкий).
+    public static func choice(forSpoken spoken: String?) -> StyleChoice? {
+        let clean = cleanCustom(spoken ?? "")
+        guard !clean.isEmpty else { return nil }
+        var said = tokens(clean)
+        for lead in leadPhrases where said.starts(with: lead) {
+            said.removeFirst(lead.count)
+            break
+        }
+        if !said.isEmpty {
+            for preset in all {
+                let names = [preset.name.en, preset.name.ru, preset.id].map(tokens)
+                if names.contains(where: { name in
+                    name.allSatisfy { part in said.contains { sameWord($0, part) } }
+                        || said.allSatisfy { word in name.contains { sameWord($0, word) } }
+                }) {
+                    return .preset(preset.id)
+                }
+            }
+        }
+        return .custom(clean)
+    }
+
+    private static let leadPhrases: [[String]] = [
+        ["in", "the", "style", "of"], ["in", "the", "manner", "of"], ["in", "style", "of"], ["like"],
+        ["в", "стиле"], ["в", "манере"], ["как", "у"], ["стиль"], ["стилем"],
+    ]
+
+    private static func tokens(_ text: String) -> [String] {
+        text.folding(options: [.caseInsensitive, .diacriticInsensitive], locale: nil)
+            .split { !$0.isLetter && !$0.isNumber }
+            .map(String.init)
+    }
+
+    /// The same word, or the same word with a different Russian ending.
+    private static func sameWord(_ a: String, _ b: String) -> Bool {
+        if a == b { return true }
+        let shorter = min(a.count, b.count)
+        guard shorter >= 4 else { return false }
+        let common = zip(a, b).prefix { $0 == $1 }.count
+        return common >= shorter - 2
+    }
+
     public static let all: [StylePreset] = [
         StylePreset(
             id: "zhvanetsky",

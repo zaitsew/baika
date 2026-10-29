@@ -7,9 +7,10 @@ struct LibraryView: View {
     @Environment(AppModel.self) private var app
     @Environment(\.modelContext) private var context
     @Query(sort: \Story.createdAt, order: .reverse) private var stories: [Story]
+    @State private var path: [UUID] = []
 
     var body: some View {
-        NavigationStack {
+        NavigationStack(path: $path) {
             Group {
                 if stories.isEmpty {
                     empty
@@ -20,6 +21,15 @@ struct LibraryView: View {
             .inkBackground()
             .navigationTitle("Library")
         }
+        // An App Intent replayed or continued a story: show its page, with the player.
+        .onAppear(perform: openRequestedStory)
+        .onChange(of: app.requestedStoryID) { _, _ in openRequestedStory() }
+    }
+
+    private func openRequestedStory() {
+        guard let id = app.requestedStoryID else { return }
+        app.requestedStoryID = nil
+        path = [id]
     }
 
     private var list: some View {

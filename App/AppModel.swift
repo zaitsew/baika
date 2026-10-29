@@ -3,12 +3,18 @@ import BaikaKit
 import FabriqueAccounts
 import Foundation
 import Observation
+import SwiftData
 
 /// What the screens share: who is signed in, the hub backends, the player, the audio folder
 /// and the AI consent.
 @MainActor
 @Observable
 final class AppModel {
+    /// The one model of the process. The scene and the App Intents share it: an intent that
+    /// launches the app cold finds the same player, library and pending request the screens do.
+    static let shared = AppModel()
+
+    let container: ModelContainer
     let accounts: AccountsClient
     let player: NarrationPlayer
     let cache = AudioCache.standard()
@@ -26,11 +32,18 @@ final class AppModel {
     var performDraft: PerformDraft?
     /// A screen asks for another tab; the tab bar follows and clears it.
     var requestedTab: RootTab?
+    /// A story an App Intent asked for. Perform takes it once, when it is on screen and the
+    /// person is signed in; until then it waits.
+    var pendingStory: PendingStory?
+    /// The library opens this story's page (an App Intent replayed or continued it).
+    var requestedStoryID: UUID?
     @ObservationIgnored private let defaults: UserDefaults
 
     init(accounts: AccountsClient = BaikaHub.makeClient(), defaults: UserDefaults = .standard) {
         self.accounts = accounts
         self.defaults = defaults
+        // The same store the scene shows. Without it the app has nothing to show.
+        container = try! ModelContainer(for: Story.self)
         let player = NarrationPlayer()
         self.player = player
         scriptWriter = ScriptWriter(backend: HubScriptBackend(accounts))
@@ -84,6 +97,22 @@ struct PerformDraft: Equatable {
     var topic: String
     var styleID: String
     var language: StoryLanguage
+}
+
+/// A story to start without the form: what an App Intent asks for. Anything left nil comes from
+/// the person's saved choices on the Perform tab.
+struct PendingStory: Equatable {
+    var topic: String
+    var style: StyleChoice?
+    var language: StoryLanguage?
+    var voice: Voice?
+    /// The earlier story this one carries on.
+    var continuing: StoryContinuation?
+    var askedAt = Date()
+
+    /// A request nobody picked up (the person never signed in) must not start a story days later.
+    static let lifetime: TimeInterval = 10 * 60
+    func isFresh(at now: Date = Date()) -> Bool { now.timeIntervalSince(askedAt) < Self.lifetime }
 }
 
 /// The device language as the style and voice catalogues want it.

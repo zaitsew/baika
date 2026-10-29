@@ -45,12 +45,12 @@ final class PerformModel {
 
     func tell(
         topic: String, style: ResolvedStyle, length: StoryLength, language: StoryLanguage, voice: Voice,
-        app: AppModel, context: ModelContext
+        continuing: StoryContinuation? = nil, app: AppModel, context: ModelContext
     ) {
         guard !isBusy else { return }
         resetScreen()
         phase = .writing
-        let request = StoryRequest(topic: topic, style: style, length: length, language: language)
+        let request = StoryRequest(topic: topic, style: style, length: length, language: language, continuing: continuing)
         task = Task { [weak self] in
             await self?.write(request, voice: voice, app: app, context: context)
         }
