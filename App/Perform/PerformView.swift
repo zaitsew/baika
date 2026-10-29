@@ -244,7 +244,11 @@ struct PerformView: View {
         case .custom(let text)?:
             styleID = Self.customID
             customStyle = text
-        case nil: break
+        case nil:
+            // "Your own style" is remembered, its text is not: without the text there is nothing to write in.
+            if styleID == Self.customID, StyleCatalog.cleanCustom(customStyle).isEmpty {
+                styleID = StyleCatalog.defaultID
+            }
         }
         if let language = pending.language { languageRaw = language.rawValue }
         if let voice = pending.voice { voiceID = voice.id }
