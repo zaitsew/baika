@@ -78,3 +78,16 @@ raw words read badly on a device.
 
 **Status.** Accepted.
 
+
+## 2026-10-29 — App Intents instead of a directory listing; "continue" writes the next part
+
+**Decision.** Siri and Shortcuts get three intents (tell a story, replay the last story, continue
+the story), all opening the app. No MCP server and no directory submission. "Continue the story"
+resumes a paused story; with nothing paused it writes the next part of the newest story with the
+last 1,500 characters of it in the prompt.
+
+**Why.** The directories reject connectors that generate audio, and a phone-only app cannot be
+listed. "Continue" had no meaning in the app yet: a library story is finished, so the useful
+reading is a second part in the same style and voice, not a replay.
+
+**Status.** Accepted. Not yet exercised on a device. `docs/INTENTS.md` has the detail.

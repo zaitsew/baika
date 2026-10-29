@@ -12,6 +12,8 @@ struct PerformView: View {
     @State private var topic = ""
     @State private var customStyle = ""
     @State private var showConsent = false
+    /// The earlier story the next one carries on, from the "continue the story" intent.
+    @State private var continuing: StoryContinuation?
     @FocusState private var focus: Field?
 
     @AppStorage("baika.styleID") private var styleID = StyleCatalog.defaultID
@@ -46,8 +48,13 @@ struct PerformView: View {
         .inkBackground()
         .animation(.easeInOut(duration: 0.25), value: model.phase == .idle)
         // "Perform this" in Talk fills the form: the person reads it, changes it, taps Tell.
-        .onAppear(perform: takeDraft)
+        .onAppear {
+            takeDraft()
+            takePending()
+        }
         .onChange(of: app.performDraft) { _, _ in takeDraft() }
+        // An App Intent ("tell me a story about ...") starts the story without the form.
+        .onChange(of: app.pendingStory) { _, _ in takePending() }
         .sheet(isPresented: $showConsent) {
             ConsentSheet {
                 app.setConsent(true)
@@ -55,6 +62,7 @@ struct PerformView: View {
                 tell()
             } onDecline: {
                 showConsent = false
+                continuing = nil
             }
         }
     }
@@ -223,6 +231,27 @@ struct PerformView: View {
         languageRaw = draft.language.rawValue
     }
 
+    /// An App Intent asked for a story: fill the form with it and tell it. The AI consent still
+    /// comes first when the person has not given it.
+    private func takePending() {
+        guard let pending = app.pendingStory else { return }
+        app.pendingStory = nil
+        // The stage is busy with another story, or the request is stale: drop it.
+        guard !model.isBusy, pending.isFresh() else { return }
+        topic = String(pending.topic.prefix(StoryPrompt.maxTopicLength))
+        switch pending.style {
+        case .preset(let id)?: styleID = id
+        case .custom(let text)?:
+            styleID = Self.customID
+            customStyle = text
+        case nil: break
+        }
+        if let language = pending.language { languageRaw = language.rawValue }
+        if let voice = pending.voice { voiceID = voice.id }
+        continuing = pending.continuing
+        tell()
+    }
+
     private func tell() {
         guard canTell, let style = resolvedStyle, !model.isBusy else { return }
         focus = nil
@@ -230,8 +259,10 @@ struct PerformView: View {
             showConsent = true
             return
         }
+        let carriedOn = continuing
+        continuing = nil
         model.tell(
             topic: cleanTopic, style: style, length: length, language: language, voice: voice,
-            app: app, context: context)
+            continuing: carriedOn, app: app, context: context)
     }
 }

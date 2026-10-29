@@ -41,11 +41,15 @@ struct RootView: View {
         .onChange(of: scenePhase) { _, phase in
             if phase == .background { app.talk.end(.dropped) }
         }
-        .onChange(of: app.requestedTab) { _, tab in
-            guard let tab else { return }
-            selection = tab
-            app.requestedTab = nil
-        }
+        .onAppear(perform: followRequestedTab)
+        .onChange(of: app.requestedTab) { _, _ in followRequestedTab() }
+    }
+
+    /// An App Intent that launched the app cold has already asked for its tab by now.
+    private func followRequestedTab() {
+        guard let tab = app.requestedTab else { return }
+        selection = tab
+        app.requestedTab = nil
     }
 
     /// A debug build can open on a given tab (`BAIKA_TAB=library`), for screenshots.
