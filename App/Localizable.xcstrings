@@ -817,18 +817,18 @@
         }
       }
     },
-    "Part of the audio for %@ is not on this iPhone. I opened it.": {
+    "Part of the audio for %@ is not downloaded yet. I opened it.": {
       "localizations": {
         "en": {
           "stringUnit": {
             "state": "translated",
-            "value": "Part of the audio for %@ is not on this iPhone. I opened it."
+            "value": "Part of the audio for %@ is not downloaded yet. I opened it."
           }
         },
         "ru": {
           "stringUnit": {
             "state": "translated",
-            "value": "Часть аудио для «%@» нет на этом iPhone. История открыта."
+            "value": "Часть аудио для «%@» ещё не загружена. История открыта."
           }
         }
       }
@@ -977,18 +977,18 @@
         }
       }
     },
-    "Play your newest story again from the start. It plays from this iPhone, without a connection.": {
+    "Play your newest story again from the start. It plays offline.": {
       "localizations": {
         "en": {
           "stringUnit": {
             "state": "translated",
-            "value": "Play your newest story again from the start. It plays from this iPhone, without a connection."
+            "value": "Play your newest story again from the start. It plays offline."
           }
         },
         "ru": {
           "stringUnit": {
             "state": "translated",
-            "value": "Включить новейшую историю с начала. Она играет с этого iPhone, без интернета."
+            "value": "Включить новейшую историю с начала. Она играет без интернета."
           }
         }
       }

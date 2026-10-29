@@ -40,7 +40,7 @@ struct TellStoryIntent: AppIntent {
 struct ReplayLastStoryIntent: AppIntent {
     static let title: LocalizedStringResource = "Replay my last story"
     static let description = IntentDescription(
-        "Play your newest story again from the start. It plays from this iPhone, without a connection.",
+        "Play your newest story again from the start. It plays offline.",
         categoryName: "Stories")
     static let supportedModes: IntentModes = .foreground
 
@@ -52,7 +52,7 @@ struct ReplayLastStoryIntent: AppIntent {
         case .playing(let title):
             return .result(dialog: IntentDialog("Playing \(title)."))
         case .needsAudio(let title):
-            return .result(dialog: IntentDialog("Part of the audio for \(title) is not on this iPhone. I opened it."))
+            return .result(dialog: IntentDialog("Part of the audio for \(title) is not downloaded yet. I opened it."))
         case .narrating(let title):
             return .result(dialog: IntentDialog("\(title) is still being narrated. I opened it."))
         }
