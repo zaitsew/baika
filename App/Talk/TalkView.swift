@@ -5,7 +5,7 @@ import SwiftUI
 ///
 /// Two layouts. The start screen picks a style and a language and has one big button. The live
 /// screen is a big orb, one line of caption and three icon buttons: mute, end, and "Perform
-/// this". Nothing else. (Ivan on Loco's voice screen: no mute button, a text "End" instead of an
+/// this". Nothing else. (The owner on Loco's voice screen: no mute button, a text "End" instead of an
 /// icon, no big pulsing button showing that it is listening.)
 struct TalkView: View {
     @Environment(AppModel.self) private var app

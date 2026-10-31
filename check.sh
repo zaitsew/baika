@@ -17,8 +17,10 @@ cd "$(dirname "$0")"
 case "${1:-}" in
   usage)
     command -v teyla >/dev/null || { echo "usage_probe=needs_teyla"; exit 0; }
+    hub="${BAIKA_HUB_REF:-}"   # the accounts hub's Supabase project ref; see .env.example
+    [ -n "$hub" ] || { echo "usage_probe=needs_BAIKA_HUB_REF"; exit 0; }
     rc=0
-    teyla probe-sql swgxlydagofazjtlqeiu "select count(*) as ai_calls_7d, coalesce(round(sum(cost_eur)::numeric, 2), 0) as ai_cost_eur_7d, count(distinct coalesce(user_id::text, external_user_id)) as ai_people_7d from accounts.usage where product = 'baika' and at > now() - interval '7 days'" || rc=1
+    teyla probe-sql "$hub" "select count(*) as ai_calls_7d, coalesce(round(sum(cost_eur)::numeric, 2), 0) as ai_cost_eur_7d, count(distinct coalesce(user_id::text, external_user_id)) as ai_people_7d from accounts.usage where product = 'baika' and at > now() - interval '7 days'" || rc=1
     exit "$rc" ;;  # a failed query is a failed probe: teyla products shows the exit code
 esac
 

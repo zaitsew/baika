@@ -1,6 +1,6 @@
 # Baika roadmap
 
-Ivan's words this serves (2026-10-23, verbatim):
+The owner's words this serves (2026-10-23, verbatim):
 
 > I wanna have ElevenLabs + Chatgpt realtime voice conversation + maybe video
 > generation - so I could ask "расскажи мне историю Канарских остравов в стиле
@@ -36,8 +36,8 @@ library or designed voices. ElevenLabs forbids cloning a voice without consent.
   streamed script, narrated playback with lock-screen controls, saved stories library.
 - App: Talk screen ported from Loco's live voice, with a mute button, a pulsing
   listening state and icon controls. Built; never run on a device (a live session needs
-  Ivan's iPhone and a signed-in account).
-- TestFlight internal build on Ivan's iPhone.
+  the owner's iPhone and a signed-in account).
+- TestFlight internal build on the owner's iPhone.
 
 ## Sprint 2 — Film
 
@@ -57,4 +57,4 @@ library or designed voices. ElevenLabs forbids cloning a voice without consent.
 ## Not decided
 
 - ElevenLabs paid plan. Development runs on the free tier (10,000 credits a month,
-  non-commercial). A paid plan needs Ivan's double yes (POLICY §11).
+  non-commercial). A paid plan needs the owner's double yes (POLICY §11).
