@@ -1,0 +1,3 @@
+[exceptions]
+term Sources/BaikaAccounts/BaikaHub.swift compiled into the app; publishable by design fp=ff48607f87c8
+gitleaks:generic-api-key Sources/BaikaAccounts/BaikaHub.swift compiled into the app; publishable by design fp=1102bc8a5d34
