@@ -15,13 +15,14 @@ Sign in with a Fabrique Accounts account (Apple, email or link). The app ships i
 
 ## Status
 
-Alpha. Perform (a narrated story) and the Library work. Talk (live voice conversation, unverified on a device) is built. Film (generated video) is later. See `docs/ROADMAP.md`.
+Alpha, build 3 of 0.1.0 (internal TestFlight; not on sale). Perform (a narrated story), the Library and App Intents work. Talk (live voice conversation, unverified on a device) is built. Film (generated video) is later. See `docs/ROADMAP.md`.
 
 ## What it does
 
 - Perform: topic (typed or dictated), 8 author styles or your own, 2, 4 or 7 minutes, Russian, English or Spanish, six narrator voices. The script streams in; narration starts after the first part is voiced.
 - Playback: background audio, lock-screen controls, back and forward 15 seconds.
 - Library: stories and their audio stay on the phone and play offline. Share the text, or the audio as one .m4a.
+- Shortcuts: tell a story (topic and style as parameters), replay the last story, or continue it. The actions also work from Spotlight and the Action button. See `docs/INTENTS.md`.
 
 It does not clone a real person's voice. A style imitates an author's manner in the text; voices are ElevenLabs library voices.
 
@@ -32,7 +33,10 @@ It does not clone a real person's voice. A style imitates an author's manner in 
 | `Sources/BaikaKit` | pure logic: styles, voices, prompt, sanitizer, chunker, audio cache, fallback decision |
 | `Sources/BaikaAccounts` | the hub bridge: script stream, `HubAudioClient` |
 | `App/` | SwiftUI app: Perform, Library, Talk, Settings |
+| `App/Intents` | App Intents and Shortcuts phrases |
 | `docs/ARCHITECTURE.md` | how a story flows; the hub contract |
+| `docs/INTENTS.md` | the three intents and the rules they keep |
+| `docs/store/listing-next.md` | draft store listing for the next version |
 | `docs/RELEASE.md` | TestFlight steps and the store checklist |
 
 ## Checks
