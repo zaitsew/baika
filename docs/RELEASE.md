@@ -43,6 +43,20 @@ Created 2026-10-24 in the App Store Connect website (Apple's API cannot create a
 `scripts/store.py availability` checks the China rule and `--apply` restores it;
 `scripts/store.py listing` fails when a store or TestFlight text names a model provider.
 
+## Weak imports
+
+The iPhoneOS 27.2 SDK marks Foundation's `Date.<=` and `Date.>=` `@backDeployed(before: iOS 27.2)`.
+iOS 27.2 betas report 27.2 but lack the symbols, so the weak import is null and the first date
+comparison crashes at launch (`EXC_BAD_ACCESS`, pc 0). A simulator cannot show it
+(Fabrique-Futur/wine-cave#148).
+
+- `DateOrder.swift` (one internal copy in `Sources/BaikaKit`, `Sources/BaikaAccounts` and `App/`)
+  keeps Baika's own comparisons in the binary. A new module that compares dates needs its own copy.
+- `App/FoundationDateOrder.swift` defines the two symbols in the app binary, for packages
+  (FabriqueAccounts and its dependencies) that call them.
+- Before an upload, build Release for a device and run `~/ops/bin/testflight weak-imports <Release-iphoneos dir>`.
+  It must print `none newer than iOS 27.1`. `testflight release` runs the same check.
+
 ## Still open before a public release
 
 - Hub side: `ai/narrate` needs `ELEVENLABS_API_KEY` set on the accounts project
