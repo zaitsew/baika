@@ -15,13 +15,15 @@ Sign in with a Fabrique Accounts account (Apple, email or link). The app ships i
 
 ## Status
 
-Alpha, build 3 of 0.1.0 (internal TestFlight; not on sale). Perform (a narrated story), the Library and App Intents work. Talk (live voice conversation, unverified on a device) is built. Film (generated video) is later. See `docs/ROADMAP.md`.
+Alpha, build 4 of 0.1.0 (internal TestFlight; not on sale). Perform, the Library, Shortcuts and Settings work. Talk (live voice conversation) is built and not yet tested on a device. Film (generated video) is not built. See `docs/ROADMAP.md`.
 
 ## What it does
 
 - Perform: topic (typed or dictated), 8 author styles or your own, 2, 4 or 7 minutes, Russian, English or Spanish, six narrator voices. The script streams in; narration starts after the first part is voiced.
 - Playback: background audio, lock-screen controls, back and forward 15 seconds.
 - Library: stories and their audio stay on the phone and play offline. Share the text, or the audio as one .m4a.
+- Talk: a live voice conversation with a big orb, a mute button and an end button. "Perform this" turns the conversation topic into a story.
+- Settings: sign-in state, and switches for the AI consent that Perform and Talk ask for before first use.
 - Shortcuts: tell a story (topic and style as parameters), replay the last story, or continue it. The actions also work from Spotlight and the Action button. See `docs/INTENTS.md`.
 
 It does not clone a real person's voice. A style imitates an author's manner in the text; voices are ElevenLabs library voices.
@@ -38,6 +40,7 @@ It does not clone a real person's voice. A style imitates an author's manner in 
 | `docs/INTENTS.md` | the three intents and the rules they keep |
 | `docs/store/listing-next.md` | draft store listing for the next version |
 | `docs/RELEASE.md` | TestFlight steps and the store checklist |
+| `docs/APP-STORE.md` | App Store review log |
 
 ## Checks
 
@@ -46,3 +49,5 @@ It does not clone a real person's voice. A style imitates an author's manner in 
 ## Licence
 
 See `LICENSE`.
+
+<!-- teyla:reviewed 2026-11-13 -->
