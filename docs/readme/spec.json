@@ -1,0 +1,26 @@
+{
+  "name": "Baika",
+  "tagline": "Ask for a story in any voice and style. Hear it told.",
+  "summary": "Claude writes it, ElevenLabs performs it, your library keeps it for offline replay.",
+  "accent": "#F2A33A",
+  "accent_dark": "#F2A33A",
+  "status": "building",
+  "kind": "app",
+  "platforms": ["iOS"],
+  "pills": ["Open source", "Alpha"],
+  "highlights": [
+    {"label": "PERFORM", "title": "A story on any topic", "text": "Type or dictate. Pick 2, 4 or 7 minutes; Russian, English or Spanish."},
+    {"label": "STYLES", "title": "8 author styles or your own", "text": "Zhvanetsky, Dovlatov, Kharms, bedtime story and more."},
+    {"label": "VOICES", "title": "Six expressive narrators", "text": "ElevenLabs voices; narration starts after the first part."},
+    {"label": "LIBRARY", "title": "Stories kept offline", "text": "Text and audio stay on the phone. Share as text or .m4a."},
+    {"label": "PLAYBACK", "title": "Plays with the screen off", "text": "Lock-screen controls, back and forward 15 seconds."},
+    {"label": "TALK", "title": "Live voice conversation", "text": "Built, not yet verified on a device."}
+  ],
+  "steps": [
+    {"title": "Pick", "text": "A topic, a style, a length."},
+    {"title": "Write", "text": "Claude streams the script."},
+    {"title": "Voice", "text": "ElevenLabs narrates in chunks."},
+    {"title": "Listen", "text": "Playback starts after part one."},
+    {"title": "Keep", "text": "Saved to your library, offline."}
+  ]
+}
