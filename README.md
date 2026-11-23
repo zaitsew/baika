@@ -69,4 +69,4 @@ Alpha. Perform and the Library work. Talk (live voice conversation) is built and
 
 See [`LICENSE`](LICENSE).
 
-<sub>Built by <a href="https://github.com/zaitsew">zaitsew</a> with a fleet of AI agents.</sub>
+<sub>Built by <a href="https://github.com/zaitsew">zaitsew</a> with a fleet of AI agents. The cake is a lie. The story is told in good faith.</sub>
