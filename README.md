@@ -69,4 +69,19 @@ Alpha. Perform and the Library work. Talk (live voice conversation) is built and
 
 See [`LICENSE`](LICENSE).
 
-<sub>Built by <a href="https://github.com/zaitsew">zaitsew</a> with a fleet of AI agents. The cake is a lie. The story is told in good faith.</sub>
+<details>
+<summary>…</summary>
+
+**Topic:** a hare who missed the last train. **Length:** 2 minutes. Three styles:
+
+> **Bedtime.** Once upon a time a hare reached the station one minute late. The train waited for him, because trains in stories are kind.
+>
+> **Noir.** The 23:40 left without him. In this town the timetable waits for nobody, least of all a guy with ears like that.
+>
+> **Shipping forecast.** Platform four: one hare, ears up. Visibility good. Prospects of a train: nil, becoming tomorrow morning.
+
+All three go to the library. Everyone replays the noir.
+
+</details>
+
+<sub>Built by <a href="https://github.com/zaitsew">zaitsew</a> with a fleet of AI agents.</sub>
